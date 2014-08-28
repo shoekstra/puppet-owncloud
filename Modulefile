@@ -1,0 +1,13 @@
+name          'shoekstra-owncloud'
+version       '0.1.0'
+source        'https://github.com/shoekstra/puppet-owncloud.git'
+author        'shoekstra'
+license       'Apache 2.0'
+summary       'Puppet module for ownCloud'
+description   'Puppet module for ownCloud'
+project_page  'https://github.com/shoekstra/puppet-owncloud'
+
+dependency 'puppetlabs/apache'
+dependency 'puppetlabs/apt'
+dependency 'puppetlabs/mysql'
+dependency 'puppetlabs/stdlib'

@@ -1,0 +1,9 @@
+fixtures:
+  repositories:
+    apache: "git://github.com/puppetlabs/puppetlabs-apache.git"
+    apt: "git://github.com/puppetlabs/puppetlabs-apt.git"
+    concat: "git://github.com/puppetlabs/puppetlabs-concat.git"
+    mysql: "git://github.com/puppetlabs/puppetlabs-mysql.git"
+    stdlib: "git://github.com/puppetlabs/puppetlabs-stdlib.git"
+  symlinks:
+    owncloud: "#{source_dir}"
