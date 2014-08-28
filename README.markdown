@@ -85,7 +85,7 @@ To install ownCloud on a web server with a separate MySQL database server, on yo
       db_name => 'owncloud',
       db_user => 'owncloud',
       db_pass => 'p4ssw0rd',
-   }
+    }
 ```
 
 When $db_host is not set to 'localhost', the web server will export any mysql:db resources for a database server to collect. On your MySQL server:
