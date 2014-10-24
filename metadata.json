@@ -31,7 +31,7 @@
     },
     {
       "name": "puppetlabs/mysql",
-      "version_requirement": ">= 3.0.0"
+      "version_requirement": ">= 2.3.1"
     },
     {
       "name": "puppetlabs/stdlib",
