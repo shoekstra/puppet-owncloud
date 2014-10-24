@@ -146,7 +146,7 @@ describe 'owncloud', :type => :class do
     context 'when $datadirectory is /var/www/owncloud/data' do
       it { should contain_exec('mkdir -p /var/www/owncloud/data').with(
         {
-          'path'   => '/bin',
+          'path'   => ['/bin', '/usr/bin'],
           'unless' => 'test -d /var/www/owncloud/data'
         }
       )}
