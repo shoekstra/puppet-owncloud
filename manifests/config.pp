@@ -28,7 +28,7 @@ class owncloud::config inherits owncloud {
   }
 
   exec { "mkdir -p ${datadirectory}":
-    path   => '/bin',
+    path   => ['/bin', '/usr/bin'],
     unless => "test -d ${datadirectory}"
   } ->
 
