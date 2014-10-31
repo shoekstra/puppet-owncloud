@@ -6,21 +6,27 @@ describe 'owncloud class' do
     # Using puppet_apply as a helper
     it 'should work with no errors' do
       pp = <<-EOS
-      class { 'owncloud': }
+      class { 'mysql::server':
+        override_options => {
+          'mysqld' => { 'bind-address' => '0.0.0.0' }
+        },
+        restart       => true,
+        root_password => 'sup3rt0ps3cr3t',
+      }
+
+      class { 'owncloud':
+        db_user => 'owncloud',
+        db_pass => 'p4ssw0rd',
+      }
       EOS
 
       # Run it twice and test for idempotency
-      expect(apply_manifest(pp).exit_code).to_not eq(1)
-      expect(apply_manifest(pp).exit_code).to eq(0)
+      apply_manifest(pp, :catch_failures => true)
+      expect(apply_manifest(pp, :catch_failures => true).exit_code).to be_zero
     end
 
     describe package('owncloud') do
       it { should be_installed }
-    end
-
-    describe service('owncloud') do
-      it { should be_enabled }
-      it { should be_running }
     end
   end
 end
