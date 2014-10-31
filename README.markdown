@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/shoekstra/puppet-owncloud.svg?branch=develop)](https://travis-ci.org/shoekstra/puppet-owncloud)
+[![Puppet Forge](http://img.shields.io/puppetforge/v/shoekstra/owncloud.svg)(https://forge.puppetlabs.com/shoekstra/owncloud)]
+
 ownCloud
 ========
 
