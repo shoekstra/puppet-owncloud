@@ -1,8 +1,8 @@
 # == Class owncloud::install
 #
-class owncloud::install inherits owncloud {
+class owncloud::install {
 
-  if $manage_apache {
+  if $owncloud::manage_apache {
     class { '::apache':
       mpm_module    => 'prefork',
       purge_configs => false,
@@ -10,7 +10,7 @@ class owncloud::install inherits owncloud {
     }
   }
 
-  if $manage_repo {
+  if $owncloud::manage_repo {
     case $::operatingsystem {
       'Ubuntu': {
         apt::source { 'owncloud':

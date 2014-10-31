@@ -2,15 +2,15 @@
 #
 # This class is called from owncloud
 #
-class owncloud::config inherits owncloud {
+class owncloud::config {
 
-  if $manage_apache or $manage_vhost {
+  if $owncloud::manage_apache or $owncloud::manage_vhost {
     require '::apache::mod::php'
     require '::apache::mod::rewrite'
     require '::apache::mod::ssl'
 
     $vhost_custom_fragment = "
-    <Directory \"${documentroot}\">
+    <Directory \"${owncloud::documentroot}\">
       Options Indexes FollowSymLinks MultiViews
       AllowOverride None
       Order allow,deny
@@ -20,38 +20,38 @@ class owncloud::config inherits owncloud {
     </Directory>"
 
     apache::vhost { 'owncloud-http':
-      servername      => $url,
+      servername      => $owncloud::url,
       port            => 80,
-      docroot         => $documentroot,
+      docroot         => $owncloud::documentroot,
       custom_fragment => $vhost_custom_fragment,
     }
   }
 
-  exec { "mkdir -p ${datadirectory}":
+  exec { "mkdir -p ${owncloud::datadirectory}":
     path   => ['/bin', '/usr/bin'],
-    unless => "test -d ${datadirectory}"
+    unless => "test -d ${owncloud::datadirectory}"
   } ->
 
-  file { $datadirectory:
+  file { $owncloud::datadirectory:
     ensure => directory,
-    owner  => $www_user,
-    group  => $www_user,
-    mode   => 0770,
+    owner  => $owncloud::www_user,
+    group  => $owncloud::www_user,
+    mode   => '0770',
   }
 
-  if $manage_db {
-    if $db_type == 'mysql' {
-      if $db_host == 'localhost' {
-        mysql::db { $db_name:
-          user     => $db_user,
-          password => $db_pass,
-          host     => $db_host,
+  if $owncloud::manage_db {
+    if $owncloud::db_type == 'mysql' {
+      if $owncloud::db_host == 'localhost' {
+        mysql::db { $owncloud::db_name:
+          user     => $owncloud::db_user,
+          password => $owncloud::db_pass,
+          host     => $owncloud::db_host,
           grant    => ['all'],
         }
       } else {
-        @@mysql::db { $db_name:
-          user     => $db_user,
-          password => $db_pass,
+        @@mysql::db { $owncloud::db_name:
+          user     => $owncloud::db_user,
+          password => $owncloud::db_pass,
           host     => $::ipaddress_eth0,
           grant    => ['all'],
           tag      => 'owncloud',
@@ -60,18 +60,18 @@ class owncloud::config inherits owncloud {
     }
   }
 
-  file { "${documentroot}/config/autoconfig.php":
+  file { "${owncloud::documentroot}/config/autoconfig.php":
     ensure  => present,
-    owner   => $www_user,
-    group   => $www_group,
+    owner   => $owncloud::www_user,
+    group   => $owncloud::www_group,
     content => template('owncloud/autoconfig.php.erb'),
   }
 
-  if $manage_skeleton {
+  if $owncloud::manage_skeleton {
     file { [
-      "${documentroot}/core/skeleton/documents",
-      "${documentroot}/core/skeleton/music",
-      "${documentroot}/core/skeleton/photos",
+      "${owncloud::documentroot}/core/skeleton/documents",
+      "${owncloud::documentroot}/core/skeleton/music",
+      "${owncloud::documentroot}/core/skeleton/photos",
       ]:
       ensure  => directory,
       recurse => true,
