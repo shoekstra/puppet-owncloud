@@ -37,5 +37,8 @@
       "name": "puppetlabs/stdlib",
       "version_requirement": ">= 2.4.0"
     }
+  ],
+  "requirements": [
+    { "name": "puppet", "version_requirement": "3.x" }
   ]
 }
