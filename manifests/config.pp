@@ -19,11 +19,38 @@ class owncloud::config {
       Dav Off
     </Directory>"
 
-    apache::vhost { 'owncloud-http':
-      servername      => $owncloud::url,
-      port            => 80,
-      docroot         => $owncloud::documentroot,
-      custom_fragment => $vhost_custom_fragment,
+    if $owncloud::vhost_https {
+      $cert = '/etc/ssl/owncloud-https.cert'
+      $key  = '/etc/ssl/owncloud-https.key'
+
+      file { $cert :
+        ensure  => file,
+        source  => "puppet:///modules/owncloud/sslcert.pem",
+        owner   => 'www-data'
+      }
+      file { $key :
+        ensure  => file,
+        source  => "puppet:///modules/owncloud/sslkey.pem",
+        owner   => 'www-data',
+        mode    => '400'
+      }
+      apache::vhost { $owncloud::url:
+        servername      => $owncloud::url,
+        port            => 443,
+        docroot         => $owncloud::documentroot,
+        ssl             => true,
+        ssl_cert        => $cert,
+        ssl_key         => $key,
+        require         => File [ $cert, $key ],
+        custom_fragment => $vhost_custom_fragment,
+      }
+    } else {
+      apache::vhost { 'owncloud-http':
+        servername      => $owncloud::url,
+        port            => 80,
+        docroot         => $owncloud::documentroot,
+        custom_fragment => $vhost_custom_fragment,
+      }
     }
   }
 

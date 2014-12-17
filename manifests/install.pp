@@ -4,9 +4,11 @@ class owncloud::install {
 
   if $owncloud::manage_apache {
     class { '::apache':
-      mpm_module    => 'prefork',
-      purge_configs => false,
-      before        => Package[$owncloud::package_name],
+      mpm_module        => 'prefork',
+      purge_configs     => true,
+      before            => Package[$owncloud::package_name],
+      default_vhost     => false,
+      default_ssl_vhost => false,
     }
   }
 
