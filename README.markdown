@@ -108,6 +108,18 @@ The ownCloud module does not install or configure the database server itself, th
       root_password => 'sup3rt0ps3cr3t',
     }
 ```
+To install ownCloud on a web server with HTTPS SSL support, change vhost_https value:
+
+```puppet
+    class { '::owncloud':
+      db_host     => 'mysqlserver.local',
+      db_name     => 'owncloud',
+      db_user     => 'owncloud',
+      db_pass     => 'p4ssw0rd',
+      vhost_https => true,
+    }
+```
+and copy your SSL certificate and the corresponding key to owncloud/files/sslcert.pem and owncloud/files/sslkey.pem.
 
 ####Install and manage only ownCloud
 
@@ -217,7 +229,6 @@ In the pipeline:
 
 * Add support for additional operating systems.
 * Add support for PostgreSQL.
-* Add support for SSL virtual hosts.
 
 At this time only one instance of ownCloud can be configured per host. It would be easy enough to change to a define to make a multi-tenant ownCloud server, but wasn't a requirement when writing this and can only see this being implemented if someone wants to add this functionality via a pull request.
 
