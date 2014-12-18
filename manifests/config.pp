@@ -45,6 +45,11 @@ class owncloud::config {
     content => template('owncloud/autoconfig.php.erb'),
   }
 
+  file { "${owncloud::documentroot}/config/config.php":
+    owner   => $owncloud::www_user,
+    group   => $owncloud::www_group,
+  }
+
   if $owncloud::manage_skeleton {
     file { [
       "${owncloud::documentroot}/core/skeleton/documents",

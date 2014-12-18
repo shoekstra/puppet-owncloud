@@ -38,7 +38,7 @@ class owncloud::install {
     $vhost_custom_fragment = "
     <Directory \"${owncloud::documentroot}\">
       Options Indexes FollowSymLinks MultiViews
-      AllowOverride None
+      AllowOverride All
       Order allow,deny
       Allow from all
       Satisfy Any
@@ -64,6 +64,18 @@ class owncloud::install {
         servername      => $owncloud::url,
         port            => 443,
         docroot         => $owncloud::documentroot,
+        # for some reason the directories has no effect, use custom fragment instead.
+        directories => [
+          {
+            path           => $owncloud::documentroot,
+            provider       => 'directory',
+            allow          => 'from all',
+            allow_override => 'All',
+            satisfy        => 'Any',
+            #dav            => 'off',
+            options         => ['Indexes','FollowSymLinks','MultiViews']
+          },
+        ],
         ssl             => true,
         ssl_cert        => $cert,
         ssl_key         => $key,
