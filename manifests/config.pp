@@ -4,28 +4,6 @@
 #
 class owncloud::config {
 
-  if $owncloud::manage_apache or $owncloud::manage_vhost {
-    require '::apache::mod::php'
-    require '::apache::mod::rewrite'
-    require '::apache::mod::ssl'
-
-    $vhost_custom_fragment = "
-    <Directory \"${owncloud::documentroot}\">
-      Options Indexes FollowSymLinks MultiViews
-      AllowOverride None
-      Order allow,deny
-      Allow from all
-      Satisfy Any
-      Dav Off
-    </Directory>"
-
-    apache::vhost { 'owncloud-http':
-      servername      => $owncloud::url,
-      port            => 80,
-      docroot         => $owncloud::documentroot,
-      custom_fragment => $vhost_custom_fragment,
-    }
-  }
 
   exec { "mkdir -p ${owncloud::datadirectory}":
     path   => ['/bin', '/usr/bin'],
@@ -65,6 +43,11 @@ class owncloud::config {
     owner   => $owncloud::www_user,
     group   => $owncloud::www_group,
     content => template('owncloud/autoconfig.php.erb'),
+  }
+
+  file { "${owncloud::documentroot}/config/config.php":
+    owner   => $owncloud::www_user,
+    group   => $owncloud::www_group,
   }
 
   if $owncloud::manage_skeleton {

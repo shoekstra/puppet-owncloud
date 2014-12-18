@@ -13,6 +13,7 @@ class owncloud (
   $manage_repo     = true,
   $manage_skeleton = true,
   $manage_vhost    = true,
+  $vhost_https     = true,
   $url             = "owncloud.${::domain}",
   $datadirectory   = $owncloud::params::datadirectory,
 ) inherits owncloud::params {
