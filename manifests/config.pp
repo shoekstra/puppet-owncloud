@@ -4,11 +4,13 @@
 #
 class owncloud::config {
 
-  if $owncloud::manage_apache or $owncloud::manage_vhost {
+  if $owncloud::manage_apache {
     require '::apache::mod::php'
     require '::apache::mod::rewrite'
     require '::apache::mod::ssl'
+  }
 
+  if $owncloud::manage_vhost {
     $vhost_custom_fragment = "
     <Directory \"${owncloud::documentroot}\">
       Options Indexes FollowSymLinks MultiViews
@@ -30,13 +32,14 @@ class owncloud::config {
   exec { "mkdir -p ${owncloud::datadirectory}":
     path   => ['/bin', '/usr/bin'],
     unless => "test -d ${owncloud::datadirectory}"
-  } ->
+  }
 
   file { $owncloud::datadirectory:
-    ensure => directory,
-    owner  => $owncloud::www_user,
-    group  => $owncloud::www_user,
-    mode   => '0770',
+    ensure  => directory,
+    owner   => $owncloud::www_user,
+    group   => $owncloud::www_user,
+    mode    => '0770',
+    require => Exec["mkdir -p ${owncloud::datadirectory}"],
   }
 
   if $owncloud::manage_db {
