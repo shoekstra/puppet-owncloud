@@ -8,6 +8,8 @@ class owncloud::install {
       purge_configs => false,
       before        => Package[$owncloud::package_name],
     }
+
+    include '::apache::mod::php', '::apache::mod::rewrite', '::apache::mod::ssl'
   }
 
   if $owncloud::manage_repo {

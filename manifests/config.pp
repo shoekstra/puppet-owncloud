@@ -4,12 +4,6 @@
 #
 class owncloud::config {
 
-  if $owncloud::manage_apache {
-    require '::apache::mod::php'
-    require '::apache::mod::rewrite'
-    require '::apache::mod::ssl'
-  }
-
   if $owncloud::manage_vhost {
     $vhost_custom_fragment = "
     <Directory \"${owncloud::documentroot}\">

@@ -55,6 +55,10 @@ describe 'owncloud' do
             ).that_comes_before('Package[owncloud]')
           end
 
+          %w(php rewrite ssl).each do |apache_mod|
+            it { should contain_class("apache::mod::#{apache_mod}") }
+          end
+
           case os
           when 'Ubuntu'
             it do
@@ -68,10 +72,6 @@ describe 'owncloud' do
           it { should contain_package('owncloud').with_ensure('present') }
 
           # owncloud::config
-
-          %w(php rewrite ssl).each do |apache_mod|
-            it { should contain_class("apache::mod::#{apache_mod}").that_comes_before('Class[owncloud::config]') }
-          end
 
           it { should contain_apache__vhost('owncloud-http').with(servername: 'owncloud.example.com') }
 
@@ -144,7 +144,7 @@ describe 'owncloud' do
             end
 
             %w(php rewrite ssl).each do |apache_mod|
-              it { should_not contain_class("apache::mod::#{apache_mod}").that_comes_before('Class[owncloud::config]') }
+              it { should_not contain_class("apache::mod::#{apache_mod}") }
             end
           end
 
@@ -233,7 +233,7 @@ describe 'owncloud' do
 
             it { should contain_class('apache') }
             %w(php rewrite ssl).each do |apache_mod|
-              it { should contain_class("apache::mod::#{apache_mod}").that_comes_before('Class[owncloud::config]') }
+              it { should contain_class("apache::mod::#{apache_mod}") }
             end
             it { should_not contain_apache__vhost('owncloud-http') }
           end
