@@ -183,7 +183,7 @@ GEM
       rb-inotify (>= 0.9)
     lumberjack (1.0.9)
     metaclass (0.0.4)
-    metadata-json-lint (0.0.5)
+    metadata-json-lint (0.0.4)
       json
       semantic (~> 1.0)
       spdx-licenses (~> 1.0)
