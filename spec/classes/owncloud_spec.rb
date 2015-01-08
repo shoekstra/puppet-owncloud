@@ -1,231 +1,261 @@
 require 'spec_helper'
 
-describe 'owncloud', :type => :class do
-  let :default_facts do
-    {
-      :concat_basedir => '/var/lib/puppet/concat',
-    }
-  end
-
-  # Let's just set Ubuntu facts as defaults.
-  let :facts do default_facts.merge(
-    {
-      :lsbdistid              => 'Ubuntu',
-      :operatingsystem        => 'Ubuntu',
-      :operatingsystemrelease => '12.04',
-      :osfamily               => 'Debian',
-    })
-  end
-
-  # We'll turn off any external dependencies and test each one by one.. 
-  let :default_params do
-    {
-      :manage_apache   => false,
-      :manage_db       => false,
-      :manage_repo     => false,
-      :manage_skeleton => false,
-      :manage_vhost    => false,
-    }
-  end
-
-  context 'supported operating systems' do
-    describe "Ubuntu" do
-      # Set some Ubuntu related facts for later..
-      let :ubuntu_facts do default_facts.merge(
-        {
-          :lsbdistid              => 'Ubuntu',
-          :lsbdistcodename        => 'precise', 
-          :operatingsystem        => 'Ubuntu',
-          :operatingsystemrelease => '12.04',
-          :osfamily               => 'Debian',
-        })
-      end
-
-      let :ubuntu_params do default_params.merge(
-        {
-          :datadirectory => '/var/www/owncloud/data',
-        })
-      end
-
-      let :facts do ubuntu_facts.merge({}) end
-      let :params do ubuntu_params.merge({}) end
-
-      it { should compile.with_all_deps }
-
-      it { should contain_class('owncloud::params') }
-      it { should contain_class('owncloud::install').that_comes_before('owncloud::config') }
-      it { should contain_class('owncloud::config').that_comes_before('owncloud') }
-      it { should contain_class('owncloud') }
-
-      it { should contain_package('owncloud').with_ensure('present') }
-
-      it { should contain_file('/var/www/owncloud/config/autoconfig.php').with(
-        'ensure' => 'present',
-        'owner'  => 'www-data',
-        'group'  => 'www-data',
-      ) }
-
-      ['12.04', '14.04'].each do |operatingsystemrelease|
-        context "when $manage_repo is true, should install correct repo for #{operatingsystemrelease}" do
-          let :facts do ubuntu_facts.merge({ :operatingsystemrelease => operatingsystemrelease }) end
-          let :params do ubuntu_params.merge({ :manage_repo => true }) end
-
-          it { should contain_apt__source('owncloud').with(
-            'location'   => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_#{operatingsystemrelease}/",
-            'key_source' => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_#{operatingsystemrelease}/Release.key",
-          ).that_comes_before('Package[owncloud]')}
-        end
-      end
-
-      context "when $manage_skeleton is true," do
-        let :params do ubuntu_params.merge({ :manage_skeleton => true }) end
-
-        ['core/skeleton/documents', 'core/skeleton/music', 'core/skeleton/photos'].each do |skeleton_dir|
-          describe "it should manage the #{skeleton_dir} directory and purge any unmanaged files" do
-            it { should contain_file("/var/www/owncloud/#{skeleton_dir}").with(
-              {
-              'ensure'  => 'directory',
-              'recurse' => true,
-              'purge'   => true,
-              }
-            )}
+describe 'owncloud' do
+  context 'on supported operating systems' do
+    ['Ubuntu'].each do |os|
+      describe "such as #{os}" do
+        case os
+        when 'Ubuntu'
+          let :facts do
+            {
+              concat_basedir: '/var/lib/puppet/concat',
+              domain: 'example.com',
+              fqdn: 'server.example.com',
+              ipaddress: '192.168.10.20',
+              lsbdistid: 'Ubuntu',
+              lsbdistcodename: 'precise',
+              operatingsystem: 'Ubuntu',
+              operatingsystemrelease: '12.04',
+              osfamily: 'Debian'
+            }
           end
+
+          apache_user = 'www-data'
+          apache_group = 'www-data'
+          basedirectory = '/var/www/owncloud'
+          datadirectory = "#{basedirectory}/data"
         end
-      end
 
-    end
+        context 'with module defaults' do
+          # We expect the mysql::server class to be in use when using default params
 
-    [
-      {
-        :attr  => 'db_host',
-        :title => "should set db_host",
-        :value => 'localhost',
-        :match => [/^  "dbhost"( *)=> "localhost",$/]
-      },
-      {
-        :attr  => 'db_name',
-        :title => "should set db_name",
-        :value => 'owncloud',
-        :match => [/^  "dbname"( *)=> "owncloud",$/]
-      },
-      {
-        :attr  => 'db_pass',
-        :title => "should set db_pass",
-        :value => 'owncloud',
-        :match => [/^  "dbpass"( *)=> "owncloud",$/]
+          let :pre_condition do
+            'class { "::mysql::server":
+              override_options => {
+                "mysqld" => { "bind-address" => "0.0.0.0" }
+              },
+              restart       => true,
+              root_password => "sup3rt0ps3cr3t",
+              }'
+          end
 
-      },
-      {
-        :attr  => 'db_user',
-        :title => "should set db_user",
-        :value => 'owncloud',
-        :match => [/^  "dbuser"( *)=> "owncloud",$/]
-      },
-      {
-        :attr  => 'db_type',
-        :title => "should set db_type",
-        :value => 'mysql',
-        :match => [/^  "dbtype"( *)=> "mysql",$/]
-      },
-      {
-        :attr  => 'datadirectory',
-        :title => "should set datadirectory",
-        :value => '/var/www/owncloud/data',
-        :match => [/^  "directory"( *)=> "\/var\/www\/owncloud\/data",$/]
-      }
-    ].each do |param|
-      describe "when \$#{param[:attr]} is #{param[:value]}" do
-        let :params do default_params.merge({ param[:attr].to_sym => param[:value] }) end
+          it { should compile.with_all_deps }
 
-        it "#{param[:title]} to \'#{param[:value]}\'" do
-          should contain_file('/var/www/owncloud/config/autoconfig.php').with_content(param[:match])
-        end
-      end
-    end
+          it { should contain_class('owncloud::params') }
+          it { should contain_class('owncloud::install').that_comes_before('owncloud::config') }
+          it { should contain_class('owncloud::config').that_comes_before('owncloud') }
+          it { should contain_class('owncloud') }
 
-    context 'when $datadirectory is /var/www/owncloud/data' do
-      it { should contain_exec('mkdir -p /var/www/owncloud/data').with(
-        {
-          'path'   => ['/bin', '/usr/bin'],
-          'unless' => 'test -d /var/www/owncloud/data'
-        }
-      )}
+          # owncloud::install
 
-      it { should contain_file('/var/www/owncloud/data').with(
-        {
-          'ensure' => 'directory',
-          'owner'  => 'www-data',
-          'group'  => 'www-data',
-          'mode'   => '0770'
-        }
-      )}
-    end
+          it do
+            should contain_class('apache').with(
+              mpm_module: 'prefork',
+              purge_configs: false
+            ).that_comes_before('Package[owncloud]')
+          end
 
-    context "when $manage_apache is true, install apache and manage vhost," do
-      let :params do default_params.merge( { :manage_apache => true }) end
-
-      it { should contain_class('apache').that_comes_before('Package[owncloud]') }
-
-      [true, false].each do |bool|
-        describe "even manage vhost when \$manage_vhost is #{bool} (because we manage apache)" do
-          let :params do default_params.merge( { :manage_apache => true, :manage_vhost => bool }) end
-
-          ['php', 'rewrite', 'ssl'].each do |apache_mod|
-            describe "it should include the #{apache_mod} apache module" do
-              it { should contain_class("apache::mod::#{apache_mod}").that_comes_before('Class[owncloud::config]') }
+          case os
+          when 'Ubuntu'
+            it do
+              should contain_apt__source('owncloud').with(
+                location: 'http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_12.04/',
+                key_source: 'http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_12.04/Release.key'
+              ).that_comes_before('Package[owncloud]')
             end
           end
 
-          it { should contain_apache__vhost('owncloud-http') }
+          it { should contain_package('owncloud').with_ensure('present') }
+
+          # owncloud::config
+
+          %w(php rewrite ssl).each do |apache_mod|
+            it { should contain_class("apache::mod::#{apache_mod}").that_comes_before('Class[owncloud::config]') }
+          end
+
+          it { should contain_apache__vhost('owncloud-http').with(servername: 'owncloud.example.com') }
+
+          it do
+            should contain_exec("mkdir -p #{datadirectory}").with(
+              path: ['/bin', '/usr/bin'],
+              unless: "test -d #{datadirectory}"
+            ).that_comes_before("File[#{datadirectory}]")
+          end
+
+          it do
+            should contain_file(datadirectory).with(
+              ensure: 'directory',
+              owner: apache_user,
+              group: apache_group,
+              mode: '0770'
+            )
+          end
+
+          it { should contain_mysql__db('owncloud') }
+
+          default_autoconfig = <<-EOF.gsub(/^ {12}/, '')
+            <?php
+            $AUTOCONFIG = array(
+              \"dbtype\"        => \"mysql\",
+              \"dbname\"        => \"owncloud\",
+              \"dbuser\"        => \"owncloud\",
+              \"dbpass\"        => \"owncloud\",
+              \"dbhost\"        => \"localhost\",
+              \"dbtableprefix\" => \"\",
+              \"directory\"     => \"#{datadirectory}\",
+            );
+          EOF
+
+          it do
+            should contain_file("#{basedirectory}/config/autoconfig.php").with(
+              ensure: 'present',
+              owner: apache_user,
+              group: apache_group
+            ).with_content(default_autoconfig)
+          end
+
+          %w(core/skeleton/documents core/skeleton/music core/skeleton/photos).each do |skeleton_dir|
+            it do
+              should contain_file("#{basedirectory}/#{skeleton_dir}").with(
+                ensure: 'directory',
+                recurse: true,
+                purge: true
+              )
+            end
+          end
+        end
+
+        context 'using non default parameters' do
+          describe 'when manage_apache is set to false' do
+            let(:params) { { manage_apache: false } }
+
+            # Can't work out how to test that the apache class is not called by the owncloud module - it needs
+            # to be in the catalogue using a pre_condition in order for the vhost to install (we still manage
+            # the vhost if manage_apache is set to false).
+            #
+            # it { should_not contain_class('apache') }
+
+            let :pre_condition do
+              'class { "::apache":
+                mpm_module    => "prefork",
+                purge_configs => false,
+                default_vhost => true,
+              }'
+            end
+
+            %w(php rewrite ssl).each do |apache_mod|
+              it { should_not contain_class("apache::mod::#{apache_mod}").that_comes_before('Class[owncloud::config]') }
+            end
+          end
+
+          describe 'when db_host is set to "mysqlserver"' do
+            let(:params) { { db_host: 'mysqlserver' } }
+
+            it { should_not contain_mysql__db('owncloud') }
+            it { should contain_file("#{basedirectory}/config/autoconfig.php").with_content(/\"dbhost\"(\ *)=> \"mysqlserver\",/) }
+          end
+
+          describe 'when db_name is set to "owncloud_db"' do
+            let(:params) { { db_name: 'owncloud_db' } }
+
+            it { should contain_mysql__db('owncloud_db') }
+            it { should contain_file("#{basedirectory}/config/autoconfig.php").with_content(/\"dbname\"(\ *)=> \"owncloud_db\",/) }
+          end
+
+          describe 'when db_user is set to "owncloud_user"' do
+            let(:params) { { db_user: 'owncloud_user' } }
+
+            it { should contain_mysql__db('owncloud').with(user: 'owncloud_user') }
+            it { should contain_file("#{basedirectory}/config/autoconfig.php").with_content(/\"dbuser\"(\ *)=> \"owncloud_user\",/) }
+          end
+
+          describe 'when db_pass is set to "owncloud_pass"' do
+            let(:params) { { db_pass: 'owncloud_pass' } }
+
+            it { should contain_mysql__db('owncloud').with(password: 'owncloud_pass') }
+            it { should contain_file("#{basedirectory}/config/autoconfig.php").with_content(/\"dbpass\"(\ *)=> \"owncloud_pass\",/) }
+          end
+
+          describe 'when db_type is set to "postgres"' do
+            let(:params) { { db_type: 'postgres' } }
+
+            it { expect raise_error }
+          end
+
+          describe 'when db_datadirectory is set to "/srv/owncloud/data"' do
+            let(:params) { { datadirectory: '/srv/owncloud/data' } }
+
+            it do
+              should contain_exec('mkdir -p /srv/owncloud/data').with(
+                path: ['/bin', '/usr/bin'],
+                unless: 'test -d /srv/owncloud/data'
+              ).that_comes_before('File[/srv/owncloud/data]')
+            end
+
+            it do
+              should contain_file('/srv/owncloud/data').with(
+                ensure: 'directory',
+                owner: apache_user,
+                group: apache_group,
+                mode: '0770'
+              )
+            end
+
+            it { should contain_file("#{basedirectory}/config/autoconfig.php").with_content(%r{\"directory\"(\ *)=> \"/srv/owncloud/data\",}) }
+          end
+
+          describe 'when manage_db is set to false' do
+            let(:params) { { manage_db: false } }
+
+            # Should be an exported resource thus not in our catalogue.
+            it { should_not contain_mysql__db('owncloud') }
+          end
+
+          describe 'when manage_repo is set to false' do
+            let(:params) { { manage_repo: false } }
+
+            case os
+            when 'Ubuntu'
+              it { should_not contain_apt__source('owncloud') }
+            end
+          end
+
+          describe 'when manage_skeleton is set to false' do
+            let(:params) { { manage_skeleton: false } }
+
+            ['core/skeleton/documents', 'core/skeleton/music', 'core/skeleton/photos'].each do |skeleton_dir|
+              it { should_not contain_file("#{basedirectory}/#{skeleton_dir}") }
+            end
+          end
+
+          describe 'when manage_vhost is set to false' do
+            let(:params) { { manage_vhost: false } }
+
+            it { should contain_class('apache') }
+            %w(php rewrite ssl).each do |apache_mod|
+              it { should contain_class("apache::mod::#{apache_mod}").that_comes_before('Class[owncloud::config]') }
+            end
+            it { should_not contain_apache__vhost('owncloud-http') }
+          end
+
+          describe 'when url is set to "owncloud.company.tld"' do
+            let(:params) { { url: 'owncloud.company.tld' } }
+
+            it { should contain_apache__vhost('owncloud-http').with(servername: 'owncloud.company.tld') }
+          end
         end
       end
     end
-
-    context "when $manage_apache is false and $manage_host is true, manage vhost (and include required modules)," do
-      let :params do default_params.merge( { :manage_apache => false, :manage_vhost => true }) end
-
-      let :pre_condition do
-        'class { "::apache":
-          mpm_module    => "prefork",
-          purge_configs => false,
-          default_vhost => true,
-        }'
-      end
-
-      ['php', 'rewrite', 'ssl'].each do |apache_mod|
-        describe "it should include the #{apache_mod} apache module" do
-          it { should contain_class("apache::mod::#{apache_mod}").that_comes_before('Class[owncloud::config]') }
-        end
-      end
-
-      it { should contain_apache__vhost('owncloud-http') }
-    end
-
-    context "when $manage_db is true," do
-      describe "it should create a database" do
-        let :params do default_params.merge(
-          {
-            :db_host   => 'localhost',
-            :db_name   => 'owncloud_db_name',
-            :db_pass   => 'owncloud_db_pass',
-            :db_user   => 'owncloud_db_user',
-            :db_type   => 'mysql',
-            :manage_db => true,
-          })
-        end
-
-        it { should contain_mysql__db('owncloud_db_name') }
-      end
-    end
-
   end
 
-  context 'unsupported operating system' do
-    let(:facts) {{
-      :osfamily        => 'Solaris',
-      :operatingsystem => 'Nexenta',
-    }}
+  context 'on unsupported operating systems' do
+    let :facts do
+      {
+        osfamily: 'Solaris',
+        operatingsystem: 'Nexenta'
+      }
+    end
 
-    it { expect { should contain_package('owncloud') }.to raise_error(Puppet::Error, /Nexenta not supported/) }
+    it { expect raise_error(Puppet::Error, /Nexenta not supported/) }
   end
 end
