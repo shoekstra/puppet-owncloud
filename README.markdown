@@ -91,10 +91,10 @@ To install ownCloud on a web server with a separate MySQL database server, on yo
     }
 ```
 
-When $db_host is not set to 'localhost', the web server will export any mysql:db resources for a database server to collect. On your MySQL server:
+When $db_host is not set to 'localhost', the web server will export any mysql:db resources for a database server to collect. To collect these exported databases, include the following simple wrapper class on your MySQL server:
 
 ```puppet
-    Mysql::Db <<| tag == 'owncloud' |>>
+    include '::owncloud::database'
 ```
 
 The ownCloud module does not install or configure the database server itself, this would need to be deployed by manually or, for example, with something similar to:
