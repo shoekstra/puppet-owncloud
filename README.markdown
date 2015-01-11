@@ -177,6 +177,10 @@ Set the database user in the ownCloud configuration. Defaults to 'owncloud'.
 
 Set the database type in the ownCloud configuration. Currently the only supported backend database is MySQL. Defaults to 'mysql'.
 
+##### `http_port`
+
+Set the HTTP port to a non standard port. Defaults to '80'.
+
 ##### `manage_apache`
 
 Set to true for the module to install Apache and virtual host using the [PuppetLabs Apache module](https://github.com/puppetlabs/puppetlabs-apache). Typically this is managed elsewhere in your node definition, but if you are installing ownCloud on a dedicated webserver then setting `manage_apache` to true will configure Apache as required. Defaults to 'true'.

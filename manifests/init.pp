@@ -8,6 +8,7 @@ class owncloud (
   $db_pass         = 'owncloud',
   $db_user         = 'owncloud',
   $db_type         = 'mysql',
+  $http_port       = 80,
   $manage_apache   = true,
   $manage_db       = true,
   $manage_repo     = true,

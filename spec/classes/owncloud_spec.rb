@@ -130,6 +130,16 @@ describe 'owncloud' do
         end
 
         context 'using non default parameters' do
+          describe 'when http_port is set to "8080"' do
+            let(:params) { { http_port: 8080 } }
+
+            it do
+              should contain_apache__vhost('owncloud-http').with(
+                port: 8080
+              )
+            end
+          end
+
           describe 'when manage_apache is set to false' do
             let(:params) { { manage_apache: false } }
 

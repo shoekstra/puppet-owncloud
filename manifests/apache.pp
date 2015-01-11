@@ -27,7 +27,7 @@ class owncloud::apache {
 
     apache::vhost { 'owncloud-http':
       servername      => $owncloud::url,
-      port            => 80,
+      port            => $owncloud::http_port,
       docroot         => $owncloud::documentroot,
       custom_fragment => $vhost_custom_fragment,
     }
