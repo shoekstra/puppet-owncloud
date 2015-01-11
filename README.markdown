@@ -14,8 +14,8 @@ ownCloud
     * [Beginning with ownCloud](#beginning-with-owncloud)
 4. [Usage - Configuration options and additional functionality](#usage)
 5. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
-5. [Limitations - OS compatibility, etc.](#limitations)
-6. [Development - Guide for contributing to the module](#development)
+6. [Limitations - OS compatibility, etc.](#limitations)
+7. [Development - Guide for contributing to the module](#development)
 
 ## Overview
 
@@ -25,7 +25,7 @@ The ownCloud module eases installation and initial configuration of ownCloud.
 
 ownCloud is a software system for what is commonly termed "file hosting" and is very similar to the widely-used Dropbox, with the primary difference being that ownCloud is free and open-source, allowing anyone to install and operate it without charge on a private server.
 
-This module provides a simple way to deploy an ownCloud instance, optionally including Apache installation and virtual host configuration, database creation, and an autoconfigured ownCloud instance ready for you to log into. It preconfigures the ownCloud instance using the [automatic configuration method](http://doc.owncloud.org/server/7.0/admin_manual/configuration/configuration_automation.html "Defining Automatic Configuration").
+This module provides a simple way to install ownCloud, and optionally include Apache and virtual host configuration, database creation, and an autoconfigured ownCloud instance ready for you to log into. It preconfigures the ownCloud instance using the [automatic configuration method](http://doc.owncloud.org/server/7.0/admin_manual/configuration/configuration_automation.html "Defining Automatic Configuration").
 
 ## Setup
 
@@ -33,10 +33,10 @@ This module provides a simple way to deploy an ownCloud instance, optionally inc
 
 * ownCloud configuration files and directories
 * package/service/configuration files for Apache
-* Apache modules and virtual hosts
+* Apache module and virtual hosts
 * MySQL database and user creation (does not install a MySQL server)
 
-    * **WARNING**: If module is set to manage Apache (enabled by default), any Apache configurations that are *not* managed by Puppet will be purged.
+    * **WARNING**: If module is set to manage Apache (enabled by default), any existing Apache configuration not Puppet managed may be purged.
 
 ### Setup Requirements
 
@@ -55,6 +55,7 @@ If Apache is not installed, the default behaviour of this module is to install i
     include '::apache::mod::php', '::apache::mod::rewrite', '::apache::mod::ssl'
 
     class { '::owncloud':
+      ...
       manage_apache => false,
     }
 ```
@@ -88,28 +89,24 @@ To install ownCloud on a single server, (using the [PuppetLabs MySQL module](htt
     }
 
     class { '::owncloud':
+      ...
       db_user => 'owncloud',
       db_pass => 'p4ssw0rd',
     }
 ```
 
-#### Install on separate database and web servers
+#### Install on separate database and web server
 
 To install ownCloud on a web server with a separate MySQL database server, on your web server:
 
 ```puppet
     class { '::owncloud':
+      ...
       db_host => 'mysqlserver.local',
       db_name => 'owncloud',
       db_user => 'owncloud',
       db_pass => 'p4ssw0rd',
     }
-```
-
-When $db_host is not set to 'localhost', the web server will export any mysql:db resources for a database server to collect. To collect these exported databases, include the following simple wrapper class on your MySQL server:
-
-```puppet
-    include '::owncloud::database'
 ```
 
 The ownCloud module does not install or configure the database server itself, this would need to be deployed by manually or, for example, with something similar to:
@@ -124,12 +121,45 @@ The ownCloud module does not install or configure the database server itself, th
     }
 ```
 
+When $db_host is not set to 'localhost', the web server will export any mysql:db resources for a database server to collect. To collect these exported databases, include the following simple wrapper class on your MySQL server:
+
+```puppet
+    include '::owncloud::database'
+```
+
+A complete example with with database installed on a different server would look like:
+
+```puppet
+    node 'mysqlserver.local' {
+      class { '::mysql::server':
+        override_options => {
+          'mysqld' => { 'bind-address' => '0.0.0.0' }
+        },
+        restart       => true,
+        root_password => 'sup3rt0ps3cr3t',
+      }
+
+      include '::owncloud::database'
+    }
+
+    node 'webserver.local' {
+      class { '::owncloud':
+        ...
+        db_host => 'mysqlserver.local',
+        db_name => 'owncloud',
+        db_user => 'owncloud',
+        db_pass => 'p4ssw0rd',
+      }
+    }
+```
+
 #### Install and configure Apache to use SSL
 
 To configure the Apache vhost to use SSL, you need to set `ssl` to `true` and define the absolute paths for the `ssl_cert` and `ssl_key` parameters. This module does not distribute certificate or key files to the server, you will need to take care of this yourself.
 
 ```puppet
     class { '::owncloud':
+      ...
       ssl      => true,
       ssl_cert => '/path/to/file.crt',
       ssl_key  => '/path/to/file.key',
@@ -144,6 +174,7 @@ To install and configure ownCloud with no additional modules:
 
 ```puppet
     class { '::owncloud':
+      ...
       manage_apache => false,
       manage_db     => false,
       manage_vhost  => false,
@@ -160,10 +191,10 @@ Deploying your web server with this configuration will result in:
 
 ### The `owncloud` class
 
-The `owncloud` class configures all possible options for this module. With all functionality enabled, it will
-* create the required database (either locally or publish the `mysql::db` resource to be collected later).
-* install the Apache vhost.
-* deploy ownCloud using the autoconfigure method.
+The `owncloud` class configures all possible options for this module. With default parameters it will
+* create the required database (either locally or export the `mysql::db` resource to be collected later on the database server (using `include ::owncloud::database`))
+* install Apache and configure a vhost (either HTTP or HTTP and HTTPS)
+* install the ownCloud application using the autoconfigure method
 
 #### Parameters
 
@@ -201,7 +232,7 @@ Set the HTTPS port to a non standard port. Defaults to '443'.
 
 ##### `manage_apache`
 
-Set to true for the module to install Apache and virtual host using the [PuppetLabs Apache module](https://github.com/puppetlabs/puppetlabs-apache). Typically this is managed elsewhere in your node definition, but if you are installing ownCloud on a dedicated webserver then setting `manage_apache` to true will configure Apache as required. Defaults to 'true'.
+Set to true for the module to install Apache using the [PuppetLabs Apache module](https://github.com/puppetlabs/puppetlabs-apache). Typically this is managed elsewhere in your node definition, but if you are installing ownCloud on a dedicated webserver then setting `manage_apache` to true will configure Apache as required. Defaults to 'true'.
 
 ##### `manage_db`
 
@@ -217,9 +248,7 @@ Set to true for the module to manage the skeleton directory. This is could be a 
 
 ##### `manage_vhost`
 
-Set to true for the module to install the Apache virtual host using the [PuppetLabs Apache module](https://github.com/puppetlabs/puppetlabs-apache). Defaults to 'true'.
-
-*Note:* If `manage_apache` is set to true, `manage_vhost` will be ignored and the virtual host configuration will be installed even if it's set to false.
+Set to true for the module to install the Apache virtual host using the [PuppetLabs Apache module](https://github.com/puppetlabs/puppetlabs-apache). It is possible to have `manage_apache` set to false and `manage_vhost` set to true to only install the vhost if you manage Apache separately. Defaults to 'true'.
 
 ##### `ssl`
 
@@ -252,13 +281,14 @@ Configures the virtual host to install if `manage_apache` or `manage_vhost` are 
 #### Public Classes
 
 * `owncloud`: Guides the installation of ownCloud (including database creation and user data directory if specified).
+* `owncloud::database`: Installs the ownCloud database; include this on your database server if it is separate to the web server (not required if database and application run on same server).
 
 #### Private Classes
 
 * `owncloud::apache`: Installs and configures Apache when `manage_apache` is set to `true`.
-* `ownCloud::config`: Configures ownCloud using an autoconfig.php (installs an Apache vhost and creates a database by default).
-* `ownCloud::install`: Installs ownCloud (and ownCloud repository by default).
-* `ownCloud::params`: Manages ownCloud operating system specific parameters.
+* `owncloud::config`: Configures ownCloud using autoconfig.php (and creates/exports a database).
+* `owncloud::install`: Installs ownCloud (using the ownCloud repository).
+* `owncloud::params`: Manages ownCloud operating system specific parameters.
 
 ## Limitations
 
