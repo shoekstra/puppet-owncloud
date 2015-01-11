@@ -76,6 +76,7 @@ describe 'owncloud' do
           end
 
           it { should contain_apache__vhost('owncloud-http').with(servername: 'owncloud.example.com') }
+          it { should_not contain_apache__vhost('owncloud-https').with(servername: 'owncloud.example.com') }
 
           # owncloud::config
 
@@ -250,6 +251,44 @@ describe 'owncloud' do
               it { should contain_class("apache::mod::#{apache_mod}") }
             end
             it { should_not contain_apache__vhost('owncloud-http') }
+          end
+
+          describe 'when ssl is set to true (and has related cert params)' do
+            let :params do
+              {
+                ssl: true,
+                ssl_ca: '/srv/www/owncloud/certs/ca.crt',
+                ssl_cert: '/srv/www/owncloud/certs/cert.crt',
+                ssl_chain: '/srv/www/owncloud/certs/chain.crt',
+                ssl_key: '/srv/www/owncloud/certs/key.crt'
+              }
+            end
+
+            it { should contain_apache__vhost('owncloud-http').with(port: 80) }
+
+            it do
+              should contain_apache__vhost('owncloud-https').with(
+                port: 443,
+                ssl_ca: '/srv/www/owncloud/certs/ca.crt',
+                ssl_cert: '/srv/www/owncloud/certs/cert.crt',
+                ssl_chain: '/srv/www/owncloud/certs/chain.crt',
+                ssl_key: '/srv/www/owncloud/certs/key.crt',
+                ssl: true
+              )
+            end
+          end
+
+          describe 'when ssl is set to true (and https_port is set to 8443)' do
+            let :params do
+              {
+                https_port: 8443,
+                ssl: true,
+                ssl_cert: '/srv/www/owncloud/certs/cert.crt',
+                ssl_key: '/srv/www/owncloud/certs/key.crt'
+              }
+            end
+
+            it { should contain_apache__vhost('owncloud-https').with(port: 8443) }
           end
 
           describe 'when url is set to "owncloud.company.tld"' do

@@ -124,6 +124,20 @@ The ownCloud module does not install or configure the database server itself, th
     }
 ```
 
+#### Install and configure Apache to use SSL
+
+To configure the Apache vhost to use SSL, you need to set `ssl` to `true` and define the absolute paths for the `ssl_cert` and `ssl_key` parameters. This module does not distribute certificate or key files to the server, you will need to take care of this yourself.
+
+```puppet
+    class { '::owncloud':
+      ssl      => true,
+      ssl_cert => '/path/to/file.crt',
+      ssl_key  => '/path/to/file.key',
+    }
+```
+
+When configured to use SSL, any non HTTPS traffic to the HTTP port (defaults to 80) will be redirected to the HTTPS port (defaults to 443).
+
 #### Install and manage only ownCloud
 
 To install and configure ownCloud with no additional modules:
@@ -181,6 +195,10 @@ Set the database type in the ownCloud configuration. Currently the only supporte
 
 Set the HTTP port to a non standard port. Defaults to '80'.
 
+##### `https_port`
+
+Set the HTTPS port to a non standard port. Defaults to '443'.
+
 ##### `manage_apache`
 
 Set to true for the module to install Apache and virtual host using the [PuppetLabs Apache module](https://github.com/puppetlabs/puppetlabs-apache). Typically this is managed elsewhere in your node definition, but if you are installing ownCloud on a dedicated webserver then setting `manage_apache` to true will configure Apache as required. Defaults to 'true'.
@@ -202,6 +220,26 @@ Set to true for the module to manage the skeleton directory. This is could be a 
 Set to true for the module to install the Apache virtual host using the [PuppetLabs Apache module](https://github.com/puppetlabs/puppetlabs-apache). Defaults to 'true'.
 
 *Note:* If `manage_apache` is set to true, `manage_vhost` will be ignored and the virtual host configuration will be installed even if it's set to false.
+
+##### `ssl`
+
+Set to true to enable HTTPS. When enabled, HTTP requests will be redirected to HTTPS. Must at least set the `ssl_cert` and `ssl_key` parameters to use SSL. Defaults to 'false'.
+
+##### `ssl_ca`
+
+Set the path of the CA certificate file, must use the absolute path.
+
+##### `ssl_cert`
+
+Set the path of the certificate file, must use the absolute path.
+
+##### `ssl_chain`
+
+Set the path of the certificate chain file, must use the absolute path.
+
+##### `ssl_key`
+
+Set the path of the certificate key file, must use the absolute path.
 
 ##### `url`
 
@@ -237,7 +275,6 @@ In the pipeline:
 
 * Add support for additional operating systems.
 * Add support for PostgreSQL.
-* Add support for SSL virtual hosts.
 
 At this time only one instance of ownCloud can be configured per host. It would be easy enough to change to a define to make a multi-tenant ownCloud server, but wasn't a requirement when writing this and can only see this being implemented if someone wants to add this functionality via a pull request.
 
