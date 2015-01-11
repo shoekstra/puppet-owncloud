@@ -42,7 +42,22 @@ This module provides a simple way to deploy an ownCloud instance, optionally inc
 
 In order to use the [PuppetLabs MySQL module](https://github.com/puppetlabs/puppetlabs-mysql) to create the database on a separate database server, you will need to have [exported resources functionality](https://docs.puppetlabs.com/puppet/latest/reference/lang_exported.html "Exported Resources").
 
-If Apache is not installed, the default behaviour of the ownCloud module is to install it.
+If Apache is not installed, the default behaviour of this module is to install it. If you're already managing an Apache install with Puppet (or want to amend any of the Apache related configuration), set `manage_apache` to false and ensure the php, rewrite and ssl mods are enabled, e.g.:
+
+```puppet
+    class { '::apache':
+      ...
+      default_vhost => false,
+      mpm_module    => 'prefork',
+      purge_configs => false,
+    }
+
+    include '::apache::mod::php', '::apache::mod::rewrite', '::apache::mod::ssl'
+
+    class { '::owncloud':
+      manage_apache => false,
+    }
+```
 
 ### Beginning with ownCloud
 
@@ -198,6 +213,7 @@ Configures the virtual host to install if `manage_apache` or `manage_vhost` are 
 
 #### Private Classes
 
+* `owncloud::apache`: Installs and configures Apache when `manage_apache` is set to `true`.
 * `ownCloud::config`: Configures ownCloud using an autoconfig.php (installs an Apache vhost and creates a database by default).
 * `ownCloud::install`: Installs ownCloud (and ownCloud repository by default).
 * `ownCloud::params`: Manages ownCloud operating system specific parameters.

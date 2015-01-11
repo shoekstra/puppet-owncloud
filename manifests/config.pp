@@ -4,25 +4,6 @@
 #
 class owncloud::config {
 
-  if $owncloud::manage_vhost {
-    $vhost_custom_fragment = "
-    <Directory \"${owncloud::documentroot}\">
-      Options Indexes FollowSymLinks MultiViews
-      AllowOverride None
-      Order allow,deny
-      Allow from all
-      Satisfy Any
-      Dav Off
-    </Directory>"
-
-    apache::vhost { 'owncloud-http':
-      servername      => $owncloud::url,
-      port            => 80,
-      docroot         => $owncloud::documentroot,
-      custom_fragment => $vhost_custom_fragment,
-    }
-  }
-
   exec { "mkdir -p ${owncloud::datadirectory}":
     path   => ['/bin', '/usr/bin'],
     unless => "test -d ${owncloud::datadirectory}"

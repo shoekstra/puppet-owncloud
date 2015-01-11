@@ -2,16 +2,6 @@
 #
 class owncloud::install {
 
-  if $owncloud::manage_apache {
-    class { '::apache':
-      mpm_module    => 'prefork',
-      purge_configs => false,
-      before        => Package[$owncloud::package_name],
-    }
-
-    include '::apache::mod::php', '::apache::mod::rewrite', '::apache::mod::ssl'
-  }
-
   if $owncloud::manage_repo {
     case $::operatingsystem {
       'Ubuntu': {
@@ -26,7 +16,6 @@ class owncloud::install {
         }
       }
       default: {
-        fail("${module_name} unsupported operatingsystem ${::operatingsystem}")
       }
     }
   }

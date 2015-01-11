@@ -42,22 +42,12 @@ describe 'owncloud' do
           it { should compile.with_all_deps }
 
           it { should contain_class('owncloud::params') }
-          it { should contain_class('owncloud::install').that_comes_before('owncloud::config') }
+          it { should contain_class('owncloud::install').that_comes_before('owncloud::apache') }
+          it { should contain_class('owncloud::apache').that_comes_before('owncloud::config') }
           it { should contain_class('owncloud::config').that_comes_before('owncloud') }
           it { should contain_class('owncloud') }
 
           # owncloud::install
-
-          it do
-            should contain_class('apache').with(
-              mpm_module: 'prefork',
-              purge_configs: false
-            ).that_comes_before('Package[owncloud]')
-          end
-
-          %w(php rewrite ssl).each do |apache_mod|
-            it { should contain_class("apache::mod::#{apache_mod}") }
-          end
 
           case os
           when 'Ubuntu'
@@ -71,9 +61,23 @@ describe 'owncloud' do
 
           it { should contain_package('owncloud').with_ensure('present') }
 
-          # owncloud::config
+          # owncloud::apache
+
+          it do
+            should contain_class('apache').with(
+              default_vhost: false,
+              mpm_module: 'prefork',
+              purge_configs: false
+            )
+          end
+
+          %w(php rewrite ssl).each do |apache_mod|
+            it { should contain_class("apache::mod::#{apache_mod}") }
+          end
 
           it { should contain_apache__vhost('owncloud-http').with(servername: 'owncloud.example.com') }
+
+          # owncloud::config
 
           it do
             should contain_exec("mkdir -p #{datadirectory}").with(

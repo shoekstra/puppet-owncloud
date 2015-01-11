@@ -26,6 +26,7 @@ class owncloud (
   validate_re($db_type, '^mysql$', '$database must be \'mysql\'')
 
   class { 'owncloud::install': } ->
+  class { 'owncloud::apache': } ->
   class { 'owncloud::config': } ->
   Class['owncloud']
 }
