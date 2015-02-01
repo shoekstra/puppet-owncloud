@@ -15,7 +15,7 @@ class owncloud::install {
           before      => Package[$owncloud::package_name],
         }
       }
-      'CentOS' {
+      'CentOS': {
         include ::epel
         yumrepo { 'isv:ownCloud:community':
           name     => 'isv_ownCloud_community',
@@ -26,7 +26,7 @@ class owncloud::install {
           enabled  => true,
         }
       }
-      'Fedora' {
+      'Fedora': {
         yumrepo { 'isv:ownCloud:community':
           name     => 'isv_ownCloud_community',
           descr    => "Latest stable community release of ownCloud (Fedora_${::operatingsystemmajrelease})",
