@@ -15,16 +15,6 @@ class owncloud::apache {
   }
 
   if $owncloud::manage_vhost {
-  $vhost_custom_fragment = "
-  <Directory \"${owncloud::documentroot}\">
-    Options Indexes FollowSymLinks MultiViews
-    AllowOverride None
-    Order allow,deny
-    Allow from all
-    Satisfy Any
-    Dav Off
-  </Directory>"
-
     if $owncloud::ssl {
       apache::vhost { 'owncloud-http':
         servername => $owncloud::url,
@@ -40,22 +30,38 @@ class owncloud::apache {
       }
 
       apache::vhost { 'owncloud-https':
-        servername      => $owncloud::url,
-        port            => $owncloud::https_port,
-        docroot         => $owncloud::documentroot,
-        custom_fragment => $vhost_custom_fragment,
-        ssl             => true,
-        ssl_ca          => $owncloud::ssl_ca,
-        ssl_cert        => $owncloud::ssl_cert,
-        ssl_chain       => $owncloud::ssl_chain,
-        ssl_key         => $owncloud::ssl_key,
+        servername  => $owncloud::url,
+        port        => $owncloud::https_port,
+        docroot     => $owncloud::documentroot,
+        directories => [
+          {
+            path           => $owncloud::documentroot,
+            options        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
+            allow_override => 'All',
+            order          => 'Allow,Deny',
+            allow          => 'from All',
+          }
+        ],
+        ssl         => true,
+        ssl_ca      => $owncloud::ssl_ca,
+        ssl_cert    => $owncloud::ssl_cert,
+        ssl_chain   => $owncloud::ssl_chain,
+        ssl_key     => $owncloud::ssl_key,
       }
     } else {
       apache::vhost { 'owncloud-http':
-        servername      => $owncloud::url,
-        port            => $owncloud::http_port,
-        docroot         => $owncloud::documentroot,
-        custom_fragment => $vhost_custom_fragment,
+        servername  => $owncloud::url,
+        port        => $owncloud::http_port,
+        docroot     => $owncloud::documentroot,
+        directories => [
+          {
+            path           => $owncloud::documentroot,
+            options        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
+            allow_override => 'All',
+            order          => 'Allow,Deny',
+            allow          => 'from All',
+          }
+        ],
       }
     }
   }
