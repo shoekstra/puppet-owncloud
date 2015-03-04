@@ -35,11 +35,13 @@ class owncloud::apache {
         docroot     => $owncloud::documentroot,
         directories => [
           {
-            path           => $owncloud::documentroot,
-            options        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
-            allow_override => 'All',
-            order          => 'Allow,Deny',
-            allow          => 'from All',
+            path            => $owncloud::documentroot,
+            options         => ['Indexes', 'FollowSymLinks', 'MultiViews'],
+            allow_override  => 'All',
+            order           => 'Allow,Deny',
+            allow           => 'from All',
+            satisfy         => 'Any',
+            custom_fragment => 'Dav Off',
           }
         ],
         ssl         => true,
@@ -55,11 +57,13 @@ class owncloud::apache {
         docroot     => $owncloud::documentroot,
         directories => [
           {
-            path           => $owncloud::documentroot,
-            options        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
-            allow_override => 'All',
-            order          => 'Allow,Deny',
-            allow          => 'from All',
+            path            => $owncloud::documentroot,
+            options         => ['Indexes', 'FollowSymLinks', 'MultiViews'],
+            allow_override  => 'All',
+            order           => 'Allow,Deny',
+            allow           => 'from All',
+            satisfy         => 'Any',
+            custom_fragment => 'Dav Off',
           }
         ],
       }
