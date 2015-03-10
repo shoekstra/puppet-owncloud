@@ -6,14 +6,18 @@ group :test do
   gem "rspec-puppet", :git => 'https://github.com/rodjek/rspec-puppet.git'
   gem "puppetlabs_spec_helper"
   gem "metadata-json-lint"
+  gem "rspec-puppet-facts"
 end
 
 group :development do
   gem "travis"
   gem "travis-lint"
-  gem "beaker"
-  gem "beaker-rspec"
   gem "vagrant-wrapper"
   gem "puppet-blacksmith"
   gem "guard-rake"
+end
+
+group :system_tests do
+  gem "beaker"
+  gem "beaker-rspec"
 end
