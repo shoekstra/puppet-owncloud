@@ -1,7 +1,7 @@
 # == Class owncloud::params
 #
-# This class is meant to be called from owncloud
-# It sets variables according to platform
+# This class is meant to be called from owncloud.
+# It sets variables according to platform.
 #
 class owncloud::params {
   case $::operatingsystem {

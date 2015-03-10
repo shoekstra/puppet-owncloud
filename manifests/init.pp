@@ -21,8 +21,8 @@ class owncloud (
   $ssl_chain       = undef,
   $ssl_key         = undef,
   $url             = "owncloud.${::domain}",
-  $datadirectory   = $owncloud::params::datadirectory,
-) inherits owncloud::params {
+  $datadirectory   = $::owncloud::params::datadirectory,
+) inherits ::owncloud::params {
 
   validate_bool($manage_apache)
   validate_bool($manage_db)
@@ -40,8 +40,8 @@ class owncloud (
     if $ssl_chain { validate_absolute_path($ssl_chain) }
   }
 
-  class { 'owncloud::install': } ->
-  class { 'owncloud::apache': } ->
-  class { 'owncloud::config': } ->
-  Class['owncloud']
+  class { '::owncloud::install': } ->
+  class { '::owncloud::apache': } ->
+  class { '::owncloud::config': } ->
+  Class['::owncloud']
 }

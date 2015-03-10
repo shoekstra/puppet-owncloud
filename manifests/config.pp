@@ -1,6 +1,6 @@
 # == Class owncloud::config
 #
-# This class is called from owncloud
+# This class is called from owncloud for service config.
 #
 class owncloud::config {
 
@@ -9,27 +9,27 @@ class owncloud::config {
     unless => "test -d ${owncloud::datadirectory}"
   }
 
-  file { $owncloud::datadirectory:
+  file { $::owncloud::datadirectory:
     ensure  => directory,
-    owner   => $owncloud::www_user,
-    group   => $owncloud::www_user,
+    owner   => $::owncloud::www_user,
+    group   => $::owncloud::www_user,
     mode    => '0770',
     require => Exec["mkdir -p ${owncloud::datadirectory}"],
   }
 
-  if $owncloud::manage_db {
-    if $owncloud::db_type == 'mysql' {
-      if $owncloud::db_host == 'localhost' {
-        mysql::db { $owncloud::db_name:
-          user     => $owncloud::db_user,
-          password => $owncloud::db_pass,
-          host     => $owncloud::db_host,
+  if $::owncloud::manage_db {
+    if $::owncloud::db_type == 'mysql' {
+      if $::owncloud::db_host == 'localhost' {
+        mysql::db { $::owncloud::db_name:
+          user     => $::owncloud::db_user,
+          password => $::owncloud::db_pass,
+          host     => $::owncloud::db_host,
           grant    => ['all'],
         }
       } else {
-        @@mysql::db { $owncloud::db_name:
-          user     => $owncloud::db_user,
-          password => $owncloud::db_pass,
+        @@mysql::db { $::owncloud::db_name:
+          user     => $::owncloud::db_user,
+          password => $::owncloud::db_pass,
           host     => $::ipaddress_eth0,
           grant    => ['all'],
           tag      => 'owncloud',
@@ -40,12 +40,12 @@ class owncloud::config {
 
   file { "${owncloud::documentroot}/config/autoconfig.php":
     ensure  => present,
-    owner   => $owncloud::www_user,
-    group   => $owncloud::www_group,
+    owner   => $::owncloud::www_user,
+    group   => $::owncloud::www_group,
     content => template('owncloud/autoconfig.php.erb'),
   }
 
-  if $owncloud::manage_skeleton {
+  if $::owncloud::manage_skeleton {
     file { [
       "${owncloud::documentroot}/core/skeleton/documents",
       "${owncloud::documentroot}/core/skeleton/music",

@@ -1,6 +1,6 @@
 # == Class owncloud::database
 #
-# This class is called from owncloud
+# This class is called from owncloud.
 #
 class owncloud::database {
 

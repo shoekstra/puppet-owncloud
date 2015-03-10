@@ -1,8 +1,10 @@
 # == Class owncloud::install
 #
+# This class is called from owncloud for install.
+#
 class owncloud::install {
 
-  if $owncloud::manage_repo {
+  if $::owncloud::manage_repo {
     case $::operatingsystem {
       'Ubuntu': {
         apt::source { 'owncloud':
@@ -12,7 +14,7 @@ class owncloud::install {
           include_src => false,
           key         => 'BA684223',
           key_source  => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_${::operatingsystemrelease}/Release.key",
-          before      => Package[$owncloud::package_name],
+          before      => Package[$::owncloud::package_name],
         }
       }
       'CentOS': {
@@ -41,7 +43,7 @@ class owncloud::install {
     }
   }
 
-  package { $owncloud::package_name:
+  package { $::owncloud::package_name:
     ensure => present,
   }
 }
