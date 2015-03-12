@@ -1,32 +1,31 @@
 require 'spec_helper'
 
 describe 'owncloud' do
-  context 'on supported operating systems' do
-    ['Ubuntu'].each do |os|
-      describe "such as #{os}" do
-        case os
-        when 'Ubuntu'
-          let :facts do
-            {
-              concat_basedir: '/var/lib/puppet/concat',
-              domain: 'example.com',
-              fqdn: 'server.example.com',
-              ipaddress: '192.168.10.20',
-              lsbdistid: 'Ubuntu',
-              lsbdistcodename: 'precise',
-              operatingsystem: 'Ubuntu',
-              operatingsystemrelease: '12.04',
-              osfamily: 'Debian'
-            }
-          end
-
-          apache_user = 'www-data'
-          apache_group = 'www-data'
-          basedirectory = '/var/www/owncloud'
-          datadirectory = "#{basedirectory}/data"
+  context 'supported operating systems' do
+    on_supported_os.each do |os, facts|
+      context "on #{os}" do
+        let(:facts) do
+          facts.merge({
+            concat_basedir: '/var/lib/puppet/concat',
+          })
         end
 
-        context 'with module defaults' do
+        case facts[:osfamily]
+        when 'Debian'
+          apache_user = 'www-data'
+          apache_group = 'www-data'
+          datadirectory = '/var/www/owncloud/data'
+          documentroot = '/var/www/owncloud'
+        when 'RedHat'
+          apache_user = 'apache'
+          apache_group = 'apache'
+          datadirectory = '/var/www/html/owncloud/data'
+          documentroot = '/var/www/html/owncloud'
+        end
+
+        context "owncloud class without any parameters" do
+          let(:params) {{ }}
+
           # We expect the mysql::server class to be in use when using default params
 
           let :pre_condition do
@@ -39,56 +38,104 @@ describe 'owncloud' do
               }'
           end
 
-          it { should compile.with_all_deps }
+          it { is_expected.to compile.with_all_deps }
 
-          it { should contain_class('owncloud::params') }
-          it { should contain_class('owncloud::install').that_comes_before('owncloud::apache') }
-          it { should contain_class('owncloud::apache').that_comes_before('owncloud::config') }
-          it { should contain_class('owncloud::config').that_comes_before('owncloud') }
-          it { should contain_class('owncloud') }
+          it { is_expected.to contain_class('owncloud::params') }
+          it { is_expected.to contain_class('owncloud::install').that_comes_before('owncloud::apache') }
+          it { is_expected.to contain_class('owncloud::apache').that_comes_before('owncloud::config') }
+          it { is_expected.to contain_class('owncloud::config').that_comes_before('owncloud') }
+          it { is_expected.to contain_class('owncloud') }
+
+          it { is_expected.to contain_package('owncloud').with_ensure('present') }
 
           # owncloud::install
 
-          case os
-          when 'Ubuntu'
+          case facts[:osfamily]
+          when 'Debian'
+            it { is_expected.not_to contain_class('epel') }
+            it { is_expected.not_to contain_yumrepo('isv:ownCloud:community') }
+
             it do
-              should contain_apt__source('owncloud').with(
-                location: 'http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_12.04/',
-                key_source: 'http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_12.04/Release.key'
+              is_expected.to contain_apt__source('owncloud').with(
+                location: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_#{facts[:operatingsystemrelease]}/",
+                include_src: false,
+                key: 'BA684223',
+                key_source: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_#{facts[:operatingsystemrelease]}/Release.key",
+                release: '',
+                repos: '/'
               ).that_comes_before('Package[owncloud]')
+            end
+          when 'RedHat'
+            it { is_expected.not_to contain_apt__source('owncloud') }
+
+            case facts[:operatingsystem]
+            when 'CentOS'
+              it { is_expected.to contain_class('epel') }
+
+              it do
+                is_expected.to contain_yumrepo('isv:ownCloud:community').with(
+                  name: 'isv_ownCloud_community',
+                  # descr: "Latest stable community release of ownCloud (CentOS_CentOS-#{facts[:operatingsystemmajrelease]})",
+                  descr: "Latest stable community release of ownCloud (CentOS_CentOS-#{facts[:operatingsystemmajrelease]})",
+                  baseurl: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/CentOS_CentOS-#{facts[:operatingsystemmajrelease]}/",
+                  gpgcheck: true,
+                  gpgkey: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/CentOS_CentOS-#{facts[:operatingsystemmajrelease]}/repodata/repomd.xml.key",
+                  enabled: true
+                ).that_comes_before('Package[owncloud]')
+              end
+            when 'Fedora'
+              it { is_expected.not_to contain_class('epel') }
+
+              it do
+                is_expected.to contain_yumrepo('isv:ownCloud:community').with(
+                  name: 'isv_ownCloud_community',
+                  # descr: "Latest stable community release of ownCloud (Fedora_#{facts[:operatingsystemmajrelease]})",
+                  descr: "Latest stable community release of ownCloud (Fedora_#{facts[:operatingsystemmajrelease]})",
+                  baseurl: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/Fedora_#{facts[:operatingsystemmajrelease]}/",
+                  gpgcheck: true,
+                  gpgkey: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/Fedora_#{facts[:operatingsystemmajrelease]}/repodata/repomd.xml.key",
+                  enabled: true
+                ).that_comes_before('Package[owncloud]')
+              end
             end
           end
 
-          it { should contain_package('owncloud').with_ensure('present') }
+          it { is_expected.to contain_package('owncloud').with_ensure('present') }
 
           # owncloud::apache
 
           it do
-            should contain_class('apache').with(
+            is_expected.to contain_class('apache').with(
               default_vhost: false,
               mpm_module: 'prefork',
               purge_configs: false
             )
           end
 
-          %w(php rewrite ssl).each do |apache_mod|
-            it { should contain_class("apache::mod::#{apache_mod}") }
+          # We only test for the php module, ssl and rewrite are auto included by Apache module.
+
+          it { is_expected.to contain_class('apache::mod::php') }
+
+          it do
+            is_expected.to contain_apache__vhost('owncloud-http').with(
+              servername: 'owncloud.example.com',
+              port: '80'
+            )
           end
 
-          it { should contain_apache__vhost('owncloud-http').with(servername: 'owncloud.example.com') }
-          it { should_not contain_apache__vhost('owncloud-https').with(servername: 'owncloud.example.com') }
+          it { is_expected.not_to contain_apache__vhost('owncloud-https').with(servername: 'owncloud.example.com') }
 
           # owncloud::config
 
           it do
-            should contain_exec("mkdir -p #{datadirectory}").with(
+            is_expected.to contain_exec("mkdir -p #{datadirectory}").with(
               path: ['/bin', '/usr/bin'],
               unless: "test -d #{datadirectory}"
             ).that_comes_before("File[#{datadirectory}]")
           end
 
           it do
-            should contain_file(datadirectory).with(
+            is_expected.to contain_file(datadirectory).with(
               ensure: 'directory',
               owner: apache_user,
               group: apache_group,
@@ -96,7 +143,7 @@ describe 'owncloud' do
             )
           end
 
-          it { should contain_mysql__db('owncloud') }
+          it { is_expected.to contain_mysql__db('owncloud') }
 
           default_autoconfig = <<-EOF.gsub(/^ {12}/, '')
             <?php
@@ -112,7 +159,7 @@ describe 'owncloud' do
           EOF
 
           it do
-            should contain_file("#{basedirectory}/config/autoconfig.php").with(
+            is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with(
               ensure: 'present',
               owner: apache_user,
               group: apache_group
@@ -121,7 +168,7 @@ describe 'owncloud' do
 
           %w(core/skeleton/documents core/skeleton/music core/skeleton/photos).each do |skeleton_dir|
             it do
-              should contain_file("#{basedirectory}/#{skeleton_dir}").with(
+              is_expected.to contain_file("#{documentroot}/#{skeleton_dir}").with(
                 ensure: 'directory',
                 recurse: true,
                 purge: true
@@ -130,12 +177,12 @@ describe 'owncloud' do
           end
         end
 
-        context 'using non default parameters' do
+        context 'owncloud class with non default parameters' do
           describe 'when http_port is set to "8080"' do
             let(:params) { { http_port: 8080 } }
 
             it do
-              should contain_apache__vhost('owncloud-http').with(
+              is_expected.to contain_apache__vhost('owncloud-http').with(
                 port: 8080
               )
             end
@@ -148,7 +195,7 @@ describe 'owncloud' do
             # to be in the catalogue using a pre_condition in order for the vhost to install (we still manage
             # the vhost if manage_apache is set to false).
             #
-            # it { should_not contain_class('apache') }
+            # it { is_expected.not_to contain_class('apache') }
 
             let :pre_condition do
               'class { "::apache":
@@ -158,37 +205,35 @@ describe 'owncloud' do
               }'
             end
 
-            %w(php rewrite ssl).each do |apache_mod|
-              it { should_not contain_class("apache::mod::#{apache_mod}") }
-            end
+            it { is_expected.not_to contain_class('apache::mod::php') }
           end
 
           describe 'when db_host is set to "mysqlserver"' do
             let(:params) { { db_host: 'mysqlserver' } }
 
-            it { should_not contain_mysql__db('owncloud') }
-            it { should contain_file("#{basedirectory}/config/autoconfig.php").with_content(/\"dbhost\"(\ *)=> \"mysqlserver\",/) }
+            it { is_expected.not_to contain_mysql__db('owncloud') }
+            it { is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/\"dbhost\"(\ *)=> \"mysqlserver\",/) }
           end
 
           describe 'when db_name is set to "owncloud_db"' do
             let(:params) { { db_name: 'owncloud_db' } }
 
-            it { should contain_mysql__db('owncloud_db') }
-            it { should contain_file("#{basedirectory}/config/autoconfig.php").with_content(/\"dbname\"(\ *)=> \"owncloud_db\",/) }
+            it { is_expected.to contain_mysql__db('owncloud_db') }
+            it { is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/\"dbname\"(\ *)=> \"owncloud_db\",/) }
           end
 
           describe 'when db_user is set to "owncloud_user"' do
             let(:params) { { db_user: 'owncloud_user' } }
 
-            it { should contain_mysql__db('owncloud').with(user: 'owncloud_user') }
-            it { should contain_file("#{basedirectory}/config/autoconfig.php").with_content(/\"dbuser\"(\ *)=> \"owncloud_user\",/) }
+            it { is_expected.to contain_mysql__db('owncloud').with(user: 'owncloud_user') }
+            it { is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/\"dbuser\"(\ *)=> \"owncloud_user\",/) }
           end
 
           describe 'when db_pass is set to "owncloud_pass"' do
             let(:params) { { db_pass: 'owncloud_pass' } }
 
-            it { should contain_mysql__db('owncloud').with(password: 'owncloud_pass') }
-            it { should contain_file("#{basedirectory}/config/autoconfig.php").with_content(/\"dbpass\"(\ *)=> \"owncloud_pass\",/) }
+            it { is_expected.to contain_mysql__db('owncloud').with(password: 'owncloud_pass') }
+            it { is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/\"dbpass\"(\ *)=> \"owncloud_pass\",/) }
           end
 
           describe 'when db_type is set to "postgres"' do
@@ -201,14 +246,14 @@ describe 'owncloud' do
             let(:params) { { datadirectory: '/srv/owncloud/data' } }
 
             it do
-              should contain_exec('mkdir -p /srv/owncloud/data').with(
+              is_expected.to contain_exec('mkdir -p /srv/owncloud/data').with(
                 path: ['/bin', '/usr/bin'],
                 unless: 'test -d /srv/owncloud/data'
               ).that_comes_before('File[/srv/owncloud/data]')
             end
 
             it do
-              should contain_file('/srv/owncloud/data').with(
+              is_expected.to contain_file('/srv/owncloud/data').with(
                 ensure: 'directory',
                 owner: apache_user,
                 group: apache_group,
@@ -216,14 +261,14 @@ describe 'owncloud' do
               )
             end
 
-            it { should contain_file("#{basedirectory}/config/autoconfig.php").with_content(%r{\"directory\"(\ *)=> \"/srv/owncloud/data\",}) }
+            it { is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(%r{\"directory\"(\ *)=> \"/srv/owncloud/data\",}) }
           end
 
           describe 'when manage_db is set to false' do
             let(:params) { { manage_db: false } }
 
-            # Should be an exported resource thus not in our catalogue.
-            it { should_not contain_mysql__db('owncloud') }
+            # is_expected.to be an exported resource thus not in our catalogue.
+            it { is_expected.not_to contain_mysql__db('owncloud') }
           end
 
           describe 'when manage_repo is set to false' do
@@ -231,7 +276,7 @@ describe 'owncloud' do
 
             case os
             when 'Ubuntu'
-              it { should_not contain_apt__source('owncloud') }
+              it { is_expected.not_to contain_apt__source('owncloud') }
             end
           end
 
@@ -239,18 +284,16 @@ describe 'owncloud' do
             let(:params) { { manage_skeleton: false } }
 
             ['core/skeleton/documents', 'core/skeleton/music', 'core/skeleton/photos'].each do |skeleton_dir|
-              it { should_not contain_file("#{basedirectory}/#{skeleton_dir}") }
+              it { is_expected.not_to contain_file("#{documentroot}/#{skeleton_dir}") }
             end
           end
 
           describe 'when manage_vhost is set to false' do
             let(:params) { { manage_vhost: false } }
 
-            it { should contain_class('apache') }
-            %w(php rewrite ssl).each do |apache_mod|
-              it { should contain_class("apache::mod::#{apache_mod}") }
-            end
-            it { should_not contain_apache__vhost('owncloud-http') }
+            it { is_expected.to contain_class('apache') }
+            it { is_expected.to contain_class('apache::mod::php') }
+            it { is_expected.not_to contain_apache__vhost('owncloud-http') }
           end
 
           describe 'when ssl is set to true (and has related cert params)' do
@@ -264,10 +307,10 @@ describe 'owncloud' do
               }
             end
 
-            it { should contain_apache__vhost('owncloud-http').with(port: 80) }
+            it { is_expected.to contain_apache__vhost('owncloud-http').with(port: 80) }
 
             it do
-              should contain_apache__vhost('owncloud-https').with(
+              is_expected.to contain_apache__vhost('owncloud-https').with(
                 port: 443,
                 ssl_ca: '/srv/www/owncloud/certs/ca.crt',
                 ssl_cert: '/srv/www/owncloud/certs/cert.crt',
@@ -288,27 +331,27 @@ describe 'owncloud' do
               }
             end
 
-            it { should contain_apache__vhost('owncloud-https').with(port: 8443) }
+            it { is_expected.to contain_apache__vhost('owncloud-https').with(port: 8443) }
           end
 
           describe 'when url is set to "owncloud.company.tld"' do
             let(:params) { { url: 'owncloud.company.tld' } }
 
-            it { should contain_apache__vhost('owncloud-http').with(servername: 'owncloud.company.tld') }
+            it { is_expected.to contain_apache__vhost('owncloud-http').with(servername: 'owncloud.company.tld') }
           end
         end
       end
     end
   end
 
-  context 'on unsupported operating systems' do
-    let :facts do
-      {
-        osfamily: 'Solaris',
-        operatingsystem: 'Nexenta'
-      }
-    end
+  context 'unsupported operating system' do
+    describe 'owncloud class without any parameters on Solaris/Nexenta' do
+      let(:facts) {{
+        :osfamily        => 'Solaris',
+        :operatingsystem => 'Nexenta',
+      }}
 
-    it { expect raise_error(Puppet::Error, /Nexenta not supported/) }
+      it { expect { is_expected.to contain_package('owncloud') }.to raise_error(Puppet::Error, /Nexenta not supported/) }
+    end
   end
 end
