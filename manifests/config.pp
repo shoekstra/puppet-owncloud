@@ -4,9 +4,9 @@
 #
 class owncloud::config {
 
-  exec { "mkdir -p ${owncloud::datadirectory}":
+  exec { "mkdir -p ${::owncloud::datadirectory}":
     path   => ['/bin', '/usr/bin'],
-    unless => "test -d ${owncloud::datadirectory}"
+    unless => "test -d ${::owncloud::datadirectory}"
   }
 
   file { $::owncloud::datadirectory:
@@ -14,7 +14,7 @@ class owncloud::config {
     owner   => $::owncloud::www_user,
     group   => $::owncloud::www_user,
     mode    => '0770',
-    require => Exec["mkdir -p ${owncloud::datadirectory}"],
+    require => Exec["mkdir -p ${::owncloud::datadirectory}"],
   }
 
   if $::owncloud::manage_db {
@@ -38,7 +38,7 @@ class owncloud::config {
     }
   }
 
-  file { "${owncloud::documentroot}/config/autoconfig.php":
+  file { "${::owncloud::documentroot}/config/autoconfig.php":
     ensure  => present,
     owner   => $::owncloud::www_user,
     group   => $::owncloud::www_group,
@@ -47,9 +47,9 @@ class owncloud::config {
 
   if $::owncloud::manage_skeleton {
     file { [
-      "${owncloud::documentroot}/core/skeleton/documents",
-      "${owncloud::documentroot}/core/skeleton/music",
-      "${owncloud::documentroot}/core/skeleton/photos",
+      "${::owncloud::documentroot}/core/skeleton/documents",
+      "${::owncloud::documentroot}/core/skeleton/music",
+      "${::owncloud::documentroot}/core/skeleton/photos",
       ]:
       ensure  => directory,
       recurse => true,
