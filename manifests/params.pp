@@ -4,30 +4,46 @@
 # It sets variables according to platform.
 #
 class owncloud::params {
-  case $::operatingsystem {
-    'Ubuntu': {
-      $datadirectory = '/var/www/owncloud/data'
-      $documentroot  = '/var/www/owncloud'
-      $package_name  = 'owncloud'
-      $service_name  = 'owncloud'
-      $www_user      = 'www-data'
-      $www_group     = 'www-data'
+  case $::osfamily {
+    'Debian': {
+      case $::operatingsystem {
+        'Ubuntu': {
+          $datadirectory = '/var/www/owncloud/data'
+          $documentroot  = '/var/www/owncloud'
+          $package_name  = 'owncloud'
+          $www_user      = 'www-data'
+          $www_group     = 'www-data'
+
+          if ($::operatingsystem == 'Debian' and versioncmp($operatingsystemrelease, '8') >= 0) or ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '13.10') >= 0)  {
+            $apache_version = '2.4'
+          } else {
+            $apache_version = '2.2'
+          }
+        }
+        default: {
+          fail("${::operatingsystem} not supported")
+        }
+      }
     }
-    'CentOS': {
-      $datadirectory = '/var/www/html/owncloud/data'
-      $documentroot  = '/var/www/html/owncloud'
-      $package_name  = 'owncloud'
-      $service_name  = 'owncloud'
-      $www_user      = 'apache'
-      $www_group     = 'apache'
-    }
-    'Fedora': {
-      $datadirectory = '/var/www/html/owncloud/data'
-      $documentroot  = '/var/www/html/owncloud'
-      $package_name  = 'owncloud'
-      $service_name  = 'owncloud'
-      $www_user      = 'apache'
-      $www_group     = 'apache'
+    'RedHat': {
+      case $::operatingsystem {
+        'Centos', 'Fedora': {
+          $datadirectory = '/var/www/html/owncloud/data'
+          $documentroot  = '/var/www/html/owncloud'
+          $package_name  = 'owncloud'
+          $www_user      = 'apache'
+          $www_group     = 'apache'
+
+          if ($::operatingsystem == 'Fedora' and versioncmp($operatingsystemrelease, '18') >= 0) or ($::operatingsystem != 'Fedora' and versioncmp($operatingsystemrelease, '7') >= 0) {
+            $apache_version = '2.4'
+          } else {
+            $apache_version = '2.2'
+          }
+        }
+        default: {
+          fail("${::operatingsystem} not supported")
+        }
+      }
     }
     default: {
       fail("${::operatingsystem} not supported")

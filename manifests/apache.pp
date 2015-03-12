@@ -15,6 +15,27 @@ class owncloud::apache {
   }
 
   if $::owncloud::manage_vhost {
+    $vhost_directories_common = {
+        path            => $::owncloud::documentroot,
+        options         => ['Indexes', 'FollowSymLinks', 'MultiViews'],
+        allow_override  => 'All',
+        custom_fragment => 'Dav Off',
+      }
+
+    if $::owncloud::apache_version == '2.2' {
+      $vhost_directories_version = {
+        order   => 'allow,deny',
+        allow   => 'from All',
+        satisfy => 'Any',
+      }
+    } else {
+      $vhost_directories_version = {
+        require => 'all granted'
+      }
+    }
+
+    $vhost_directories = merge($vhost_directories_common, $vhost_directories_version)
+
     if $::owncloud::ssl {
       apache::vhost { 'owncloud-http':
         servername => $::owncloud::url,
@@ -33,17 +54,7 @@ class owncloud::apache {
         servername  => $::owncloud::url,
         port        => $::owncloud::https_port,
         docroot     => $::owncloud::documentroot,
-        directories => [
-          {
-            path            => $::owncloud::documentroot,
-            options         => ['Indexes', 'FollowSymLinks', 'MultiViews'],
-            allow_override  => 'All',
-            order           => 'Allow,Deny',
-            allow           => 'from All',
-            satisfy         => 'Any',
-            custom_fragment => 'Dav Off',
-          }
-        ],
+        directories => $vhost_directories,
         ssl         => true,
         ssl_ca      => $::owncloud::ssl_ca,
         ssl_cert    => $::owncloud::ssl_cert,
@@ -55,17 +66,7 @@ class owncloud::apache {
         servername  => $::owncloud::url,
         port        => $::owncloud::http_port,
         docroot     => $::owncloud::documentroot,
-        directories => [
-          {
-            path            => $::owncloud::documentroot,
-            options         => ['Indexes', 'FollowSymLinks', 'MultiViews'],
-            allow_override  => 'All',
-            order           => 'Allow,Deny',
-            allow           => 'from All',
-            satisfy         => 'Any',
-            custom_fragment => 'Dav Off',
-          }
-        ],
+        directories => $vhost_directories,
       }
     }
   }
