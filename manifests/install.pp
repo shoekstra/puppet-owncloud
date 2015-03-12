@@ -19,6 +19,7 @@ class owncloud::install {
       }
       'CentOS': {
         include ::epel
+
         yumrepo { 'isv:ownCloud:community':
           name     => 'isv_ownCloud_community',
           descr    => "Latest stable community release of ownCloud (CentOS_CentOS-${::operatingsystemmajrelease})",
@@ -26,6 +27,7 @@ class owncloud::install {
           gpgcheck => true,
           gpgkey   => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/CentOS_CentOS-${::operatingsystemmajrelease}/repodata/repomd.xml.key",
           enabled  => true,
+          before   => Package[$::owncloud::package_name],
         }
       }
       'Fedora': {
@@ -36,6 +38,7 @@ class owncloud::install {
           gpgcheck => true,
           gpgkey   => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/Fedora_${::operatingsystemmajrelease}/repodata/repomd.xml.key",
           enabled  => true,
+          before   => Package[$::owncloud::package_name],
         }
       }
       default: {
