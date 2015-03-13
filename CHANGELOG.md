@@ -1,3 +1,7 @@
+## 0.3.1  (2015-03-13)
+
+- Fixed puppet-lint `top-scope variable being used without an explicit namespace warning` warning
+
 ## 0.3.0  (2015-03-13)
 
 - Added support for CentOS 6, 7 and Fedora 19, 20
