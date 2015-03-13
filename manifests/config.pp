@@ -38,6 +38,14 @@ class owncloud::config {
     }
   }
 
+  # Template uses:
+  $db_host = $::owncloud::db_host
+  $db_name = $::owncloud::db_name
+  $db_pass = $::owncloud::db_pass
+  $db_user = $::owncloud::db_user
+  $db_type = $::owncloud::db_type
+  $datadirectory = $::owncloud::datadirectory
+
   file { "${::owncloud::documentroot}/config/autoconfig.php":
     ensure  => present,
     owner   => $::owncloud::www_user,
