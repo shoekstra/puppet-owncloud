@@ -14,7 +14,7 @@ class owncloud::params {
           $www_user      = 'www-data'
           $www_group     = 'www-data'
 
-          if ($::operatingsystem == 'Debian' and versioncmp($operatingsystemrelease, '8') >= 0) or ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '13.10') >= 0)  {
+          if ($::operatingsystem == 'Debian' and versioncmp($::operatingsystemrelease, '8') >= 0) or ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '13.10') >= 0)  {
             $apache_version = '2.4'
           } else {
             $apache_version = '2.2'
@@ -34,7 +34,7 @@ class owncloud::params {
           $www_user      = 'apache'
           $www_group     = 'apache'
 
-          if ($::operatingsystem == 'Fedora' and versioncmp($operatingsystemrelease, '18') >= 0) or ($::operatingsystem != 'Fedora' and versioncmp($operatingsystemrelease, '7') >= 0) {
+          if ($::operatingsystem == 'Fedora' and versioncmp($::operatingsystemrelease, '18') >= 0) or ($::operatingsystem != 'Fedora' and versioncmp($::operatingsystemrelease, '7') >= 0) {
             $apache_version = '2.4'
           } else {
             $apache_version = '2.2'
