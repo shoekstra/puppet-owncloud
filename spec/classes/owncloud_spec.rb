@@ -78,9 +78,9 @@ describe 'owncloud' do
                   # descr: "Latest stable community release of ownCloud (CentOS_CentOS-#{facts[:operatingsystemmajrelease]})",
                   descr: "Latest stable community release of ownCloud (CentOS_CentOS-#{facts[:operatingsystemmajrelease]})",
                   baseurl: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/CentOS_CentOS-#{facts[:operatingsystemmajrelease]}/",
-                  gpgcheck: true,
+                  gpgcheck: 1,
                   gpgkey: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/CentOS_CentOS-#{facts[:operatingsystemmajrelease]}/repodata/repomd.xml.key",
-                  enabled: true
+                  enabled: 1
                 ).that_comes_before('Package[owncloud]')
               end
             when 'Fedora'
@@ -92,9 +92,9 @@ describe 'owncloud' do
                   # descr: "Latest stable community release of ownCloud (Fedora_#{facts[:operatingsystemmajrelease]})",
                   descr: "Latest stable community release of ownCloud (Fedora_#{facts[:operatingsystemmajrelease]})",
                   baseurl: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/Fedora_#{facts[:operatingsystemmajrelease]}/",
-                  gpgcheck: true,
+                  gpgcheck: 1,
                   gpgkey: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/Fedora_#{facts[:operatingsystemmajrelease]}/repodata/repomd.xml.key",
-                  enabled: true
+                  enabled: 1
                 ).that_comes_before('Package[owncloud]')
               end
             end
