@@ -200,7 +200,7 @@ The `owncloud` class configures all possible options for this module. With defau
 
 ##### `datadirectory`
 
-Sets the directory user data will be stored in. It is not recommended to keep this in the default location (as a sub directory of the application document root) and it should be moved out of the document root before making your ownCloud instance accessible via the internet. Defaults to '/var/www/owncloud/data' on Ubuntu
+Sets the directory user data will be stored in. It is not recommended to keep this in the default location (as a sub directory of the application document root) and it should be moved out of the document root before making your ownCloud instance accessible via the internet. Defaults to '/var/www/owncloud/data' on Debian based systems and `/var/www/html/owncloud/data` on RedHat based systems.
 
 ##### `db_host`
 
@@ -296,6 +296,10 @@ Configures the virtual host to install if `manage_apache` or `manage_vhost` are 
 
 * This module has been tested on the following Operating Systems:
 
+    * CentOS 6
+    * CentOS 7
+    * Fedora 19
+    * Fedora 20
     * Ubuntu 12.04 Precise
     * Ubuntu 14.04 Trusty
 
