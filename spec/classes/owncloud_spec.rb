@@ -6,7 +6,7 @@ describe 'owncloud' do
       context "on #{os}" do
         let(:facts) do
           facts.merge({
-            concat_basedir: '/var/lib/puppet/concat',
+            concat_basedir: '/var/lib/puppet/concat'
           })
         end
 
@@ -23,8 +23,8 @@ describe 'owncloud' do
           documentroot = '/var/www/html/owncloud'
         end
 
-        context "owncloud class without any parameters" do
-          let(:params) {{ }}
+        context 'owncloud class without any parameters' do
+          let(:params) { {} }
 
           # We expect the mysql::server class to be in use when using default params
 
@@ -346,10 +346,12 @@ describe 'owncloud' do
 
   context 'unsupported operating system' do
     describe 'owncloud class without any parameters on Solaris/Nexenta' do
-      let(:facts) {{
-        :osfamily        => 'Solaris',
-        :operatingsystem => 'Nexenta',
-      }}
+      let(:facts) do
+        {
+          osfamily: 'Solaris',
+          operatingsystem: 'Nexenta'
+        }
+      end
 
       it { expect { is_expected.to contain_package('owncloud') }.to raise_error(Puppet::Error, /Nexenta not supported/) }
     end
