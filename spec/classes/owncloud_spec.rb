@@ -274,9 +274,12 @@ describe 'owncloud' do
           describe 'when manage_repo is set to false' do
             let(:params) { { manage_repo: false } }
 
-            case os
-            when 'Ubuntu'
+            case facts[:osfamily]
+            when 'Debian'
               it { is_expected.not_to contain_apt__source('owncloud') }
+            when 'RedHat'
+              it { is_expected.not_to contain_class('epel') }
+              it { is_expected.not_to contain_yumrepo('isv:ownCloud:community') }
             end
           end
 
