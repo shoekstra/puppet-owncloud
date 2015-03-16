@@ -6,6 +6,17 @@ class owncloud::install {
 
   if $::owncloud::manage_repo {
     case $::operatingsystem {
+      'Debian': {
+        apt::source { 'owncloud':
+          location    => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/Debian_${::operatingsystemmajrelease}.0/",
+          release     => '',
+          repos       => '/',
+          include_src => false,
+          key         => 'BA684223',
+          key_source  => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/Debian_${::operatingsystemmajrelease}.0/Release.key",
+          before      => Package[$::owncloud::package_name],
+        }
+      }
       'Ubuntu': {
         apt::source { 'owncloud':
           location    => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_${::operatingsystemrelease}/",

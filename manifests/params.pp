@@ -7,7 +7,7 @@ class owncloud::params {
   case $::osfamily {
     'Debian': {
       case $::operatingsystem {
-        'Ubuntu': {
+        'Debian', 'Ubuntu': {
           $datadirectory = '/var/www/owncloud/data'
           $documentroot  = '/var/www/owncloud'
           $package_name  = 'owncloud'

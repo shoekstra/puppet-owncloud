@@ -55,15 +55,29 @@ describe 'owncloud' do
             it { is_expected.not_to contain_class('epel') }
             it { is_expected.not_to contain_yumrepo('isv:ownCloud:community') }
 
-            it do
-              is_expected.to contain_apt__source('owncloud').with(
-                location: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_#{facts[:operatingsystemrelease]}/",
-                include_src: false,
-                key: 'BA684223',
-                key_source: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_#{facts[:operatingsystemrelease]}/Release.key",
-                release: '',
-                repos: '/'
-              ).that_comes_before('Package[owncloud]')
+            case facts[:operatingsystem]
+            when 'Debian'
+              it do
+                is_expected.to contain_apt__source('owncloud').with(
+                  location: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/Debian_#{facts[:operatingsystemmajrelease]}.0/",
+                  include_src: false,
+                  key: 'BA684223',
+                  key_source: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/Debian_#{facts[:operatingsystemmajrelease]}.0/Release.key",
+                  release: '',
+                  repos: '/'
+                ).that_comes_before('Package[owncloud]')
+              end
+            when 'Ubuntu'
+              it do
+                is_expected.to contain_apt__source('owncloud').with(
+                  location: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_#{facts[:operatingsystemrelease]}/",
+                  include_src: false,
+                  key: 'BA684223',
+                  key_source: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_#{facts[:operatingsystemrelease]}/Release.key",
+                  release: '',
+                  repos: '/'
+                ).that_comes_before('Package[owncloud]')
+              end
             end
           when 'RedHat'
             it { is_expected.not_to contain_apt__source('owncloud') }
