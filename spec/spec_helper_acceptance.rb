@@ -1,9 +1,15 @@
 require 'beaker-rspec/spec_helper'
 require 'beaker-rspec/helpers/serverspec'
 
-hosts.each do |host|
-  # Install Puppet
-  install_puppet
+unless ENV['BEAKER_provision'] == 'no'
+  hosts.each do |host|
+    # Install Puppet
+    if host.is_pe?
+      install_pe
+    else
+      install_puppet
+    end
+  end
 end
 
 RSpec.configure do |c|
@@ -20,6 +26,11 @@ RSpec.configure do |c|
     hosts.each do |host|
       if fact('osfamily') == 'Debian'
         on host, puppet('module', 'install', 'puppetlabs-apt'), { :acceptable_exit_codes => [0,1] }
+      end
+      if fact('osfamily') == 'RedHat'
+        if fact('operatingsystem') != 'Fedora'
+          on host, puppet('module', 'install', 'stahnma-epel'), { :acceptable_exit_codes => [0,1] }
+        end
       end
       on host, puppet('module', 'install', 'puppetlabs-apache'), { :acceptable_exit_codes => [0,1] }
       on host, puppet('module', 'install', 'puppetlabs-mysql'), { :acceptable_exit_codes => [0,1] }

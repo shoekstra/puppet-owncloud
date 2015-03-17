@@ -1,6 +1,10 @@
+- Added support for Debian 6, 7
+- Fixed MySQL database export for RedHat family OSes
+- Fixed spec tests to pass when tests are done with FUTURE_PARSER=yes and STRICT_VARIABLES=yes
+
 ## 0.3.1  (2015-03-13)
 
-- Fixed puppet-lint `top-scope variable being used without an explicit namespace warning` warning
+- Fixed puppet-lint `top-scope variable being used without an explicit namespace` warning
 
 ## 0.3.0  (2015-03-13)
 

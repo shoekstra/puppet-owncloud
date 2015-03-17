@@ -30,7 +30,7 @@ class owncloud::config {
         @@mysql::db { $::owncloud::db_name:
           user     => $::owncloud::db_user,
           password => $::owncloud::db_pass,
-          host     => $::ipaddress_eth0,
+          host     => $::ipaddress,
           grant    => ['all'],
           tag      => 'owncloud',
         }

@@ -7,6 +7,8 @@ class owncloud::install {
   if $::owncloud::manage_repo {
     case $::operatingsystem {
       'Debian': {
+        include ::apt
+
         apt::source { 'owncloud':
           location    => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/Debian_${::operatingsystemmajrelease}.0/",
           release     => '',
@@ -18,6 +20,8 @@ class owncloud::install {
         }
       }
       'Ubuntu': {
+        include ::apt
+
         apt::source { 'owncloud':
           location    => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_${::operatingsystemrelease}/",
           release     => '',

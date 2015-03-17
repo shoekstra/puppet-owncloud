@@ -6,7 +6,8 @@ describe 'owncloud' do
       context "on #{os}" do
         let(:facts) do
           facts.merge(
-            concat_basedir: '/var/lib/puppet/concat'
+            concat_basedir: '/var/lib/puppet/concat',
+            root_home: '/root'
           )
         end
 
@@ -52,6 +53,8 @@ describe 'owncloud' do
 
           case facts[:osfamily]
           when 'Debian'
+            it { is_expected.to contain_class('apt') }
+
             it { is_expected.not_to contain_class('epel') }
             it { is_expected.not_to contain_yumrepo('isv:ownCloud:community') }
 
@@ -80,6 +83,7 @@ describe 'owncloud' do
               end
             end
           when 'RedHat'
+            it { is_expected.not_to contain_class('apt') }
             it { is_expected.not_to contain_apt__source('owncloud') }
 
             case facts[:operatingsystem]
@@ -157,7 +161,14 @@ describe 'owncloud' do
             )
           end
 
-          it { is_expected.to contain_mysql__db('owncloud') }
+          it do
+            is_expected.to contain_mysql__db('owncloud').with(
+              user: 'owncloud',
+              password: 'owncloud',
+              host: 'localhost',
+              grant: ['all']
+            )
+          end
 
           default_autoconfig = <<-EOF.gsub(/^ {12}/, '')
             <?php
