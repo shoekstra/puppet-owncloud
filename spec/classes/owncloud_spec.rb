@@ -161,13 +161,13 @@ describe 'owncloud' do
             default_autoconfig = <<-EOF.gsub(/^ {14}/, '')
               <?php
               $AUTOCONFIG = array(
-                \"dbtype\"        => \"mysql\",
-                \"dbname\"        => \"owncloud\",
-                \"dbuser\"        => \"owncloud\",
-                \"dbpass\"        => \"owncloud\",
-                \"dbhost\"        => \"localhost\",
-                \"dbtableprefix\" => \"\",
-                \"directory\"     => \"#{datadirectory}\",
+                "dbtype"        => "mysql",
+                "dbname"        => "owncloud",
+                "dbuser"        => "owncloud",
+                "dbpass"        => "owncloud",
+                "dbhost"        => "localhost",
+                "dbtableprefix" => "",
+                "directory"     => "#{datadirectory}",
               );
             EOF
 
@@ -217,7 +217,7 @@ describe 'owncloud' do
 
             it 'should not have a database resource in the catalogue (exported resource) and should populate autoconfig.php.erb correctly' do
               is_expected.not_to contain_mysql__db('owncloud')
-              is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/\"dbhost\"(\ *)=> \"test\",/)
+              is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/^  "dbhost"(\ *)=> "test",$/)
             end
           end
 
@@ -238,9 +238,9 @@ describe 'owncloud' do
                 password: 'test'
               )
 
-              is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/\"dbname\"(\ *)=> \"test\",/)
-              is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/\"dbuser\"(\ *)=> \"test\",/)
-              is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/\"dbpass\"(\ *)=> \"test\",/)
+              is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/^  "dbname"(\ *)=> "test",$/)
+              is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/^  "dbuser"(\ *)=> "test",$/)
+              is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/^  "dbpass"(\ *)=> "test",$/)
             end
           end
 
@@ -260,7 +260,7 @@ describe 'owncloud' do
                 mode: '0770'
               )
 
-              is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(%r{\"directory\"(\ *)=> \"/test\",})
+              is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/^  "directory"(\ *)=> "\/test",$/)
             end
           end
 
