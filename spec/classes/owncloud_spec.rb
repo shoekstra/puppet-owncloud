@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'versionomy'
 
 describe 'owncloud' do
   context 'supported operating systems' do
@@ -17,11 +18,41 @@ describe 'owncloud' do
           apache_group = 'www-data'
           datadirectory = '/var/www/owncloud/data'
           documentroot = '/var/www/owncloud'
+
+          case facts[:operatingsystem]
+          when 'Debian'
+            if (Versionomy.parse(facts[:operatingsystemrelease]) > Versionomy.parse('8')) || (Versionomy.parse(facts[:operatingsystemrelease]) == Versionomy.parse('8'))
+              apache_version = '2.4'
+            else
+              apache_version = '2.2'
+            end
+          when 'Ubuntu'
+            if (Versionomy.parse(facts[:operatingsystemrelease]) > Versionomy.parse('13.10')) || (Versionomy.parse(facts[:operatingsystemrelease]) == Versionomy.parse('13.10'))
+              apache_version = '2.4'
+            else
+              apache_version = '2.2'
+            end
+          end
         when 'RedHat'
           apache_user = 'apache'
           apache_group = 'apache'
           datadirectory = '/var/www/html/owncloud/data'
           documentroot = '/var/www/html/owncloud'
+
+          case facts[:operatingsystem]
+          when 'Fedora'
+            if (Versionomy.parse(facts[:operatingsystemrelease]) > Versionomy.parse('18')) || (Versionomy.parse(facts[:operatingsystemrelease]) == Versionomy.parse('18'))
+              apache_version = '2.4'
+            else
+              apache_version = '2.2'
+            end
+          else
+            if (Versionomy.parse(facts[:operatingsystemrelease]) > Versionomy.parse('7')) || (Versionomy.parse(facts[:operatingsystemrelease]) == Versionomy.parse('7'))
+              apache_version = '2.4'
+            else
+              apache_version = '2.2'
+            end
+          end
         end
 
         context 'owncloud class without any parameters' do
@@ -126,14 +157,47 @@ describe 'owncloud' do
             )
 
             # We only test for the php module, ssl and rewrite are auto included by Apache module.
+
             is_expected.to contain_class('apache::mod::php')
 
-            is_expected.to contain_apache__vhost('owncloud-http').with(
-              servername: 'owncloud.example.com',
-              port: '80'
-            )
+            is_expected.to contain_apache__vhost('owncloud-http')
 
-            is_expected.not_to contain_apache__vhost('owncloud-https').with(servername: 'owncloud.example.com')
+            # check apache vhost is generated properly
+
+            [
+              /<VirtualHost \*:80>/,
+              /ServerName owncloud./
+            ].each do |line|
+              is_expected.to contain_file('/var/lib/puppet/concat/25-owncloud-http.conf/fragments/0_owncloud-http-apache-header').with_content(line)
+            end
+
+            is_expected.to contain_File('/var/lib/puppet/concat/25-owncloud-http.conf/fragments/10_owncloud-http-docroot').with_content(/DocumentRoot "#{documentroot}"/)
+
+            vhost_dir_config = [
+              /<Directory "#{documentroot}">/,
+              /Options Indexes FollowSymLinks MultiViews/,
+              /AllowOverride All/,
+              /Dav Off/,
+              /<\/Directory>/
+            ]
+
+            if apache_version == '2.2'
+              vhost_dir_config.concat([
+                /Order allow,deny/,
+                /Allow from All/,
+                /Satisfy Any/
+              ])
+            else
+              vhost_dir_config.concat([
+                /Require all granted/
+              ])
+            end
+
+            vhost_dir_config.each do |line|
+              is_expected.to contain_File('/var/lib/puppet/concat/25-owncloud-http.conf/fragments/60_owncloud-http-directories').with_content(line)
+            end
+
+            is_expected.not_to contain_apache__vhost('owncloud-https')
           end
 
           # owncloud::config

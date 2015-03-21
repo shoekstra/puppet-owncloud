@@ -7,6 +7,7 @@ group :test do
   gem "puppetlabs_spec_helper"
   gem "metadata-json-lint"
   gem "rspec-puppet-facts"
+  gem "versionomy"
 end
 
 group :development do
