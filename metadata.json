@@ -13,21 +13,14 @@
   ],
   "operatingsystem_support": [
     {
-      "operatingsystem": "Debian",
+      "operatingsystem": "CentOS",
       "operatingsystemrelease": [
         "6",
         "7"
       ]
     },
     {
-      "operatingsystem": "Ubuntu",
-      "operatingsystemrelease": [
-        "12.04",
-        "14.04"
-      ]
-    },
-    {
-      "operatingsystem": "CentOS",
+      "operatingsystem": "Debian",
       "operatingsystemrelease": [
         "6",
         "7"
@@ -38,6 +31,13 @@
       "operatingsystemrelease": [
         "19",
         "20"
+      ]
+    },
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "12.04",
+        "14.04"
       ]
     }
   ],

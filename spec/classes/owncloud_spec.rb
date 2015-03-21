@@ -84,7 +84,7 @@ describe 'owncloud' do
 
           # owncloud::install
 
-          it 'should include required repo classes, install owncloud repo and install owncloud package' do
+          it 'should include classes to manage repo, install owncloud repo and install owncloud package' do
             case facts[:osfamily]
             when 'Debian'
               is_expected.to contain_class('apt')
@@ -149,7 +149,7 @@ describe 'owncloud' do
 
           # owncloud::apache
 
-          it 'should include \'::apache\' and \'apache::mod::php\' classes and create a vhost' do
+          it 'should include class to manage webserver and create vhost' do
             is_expected.to contain_class('apache').with(
               default_vhost: false,
               mpm_module: 'prefork',
