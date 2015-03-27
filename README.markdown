@@ -300,6 +300,7 @@ Configures the virtual host to install if `manage_apache` or `manage_vhost` are 
     * CentOS 7
     * Debian 6
     * Debian 7
+    * Debian 8
     * Fedora 19
     * Fedora 20
     * Ubuntu 12.04 Precise
