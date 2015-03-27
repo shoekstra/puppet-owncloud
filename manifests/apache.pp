@@ -45,7 +45,7 @@ class owncloud::apache {
           {
             comment      => 'redirect non-SSL traffic to SSL site',
             rewrite_cond => ['%{HTTPS} off'],
-            rewrite_rule => ['(.*) https://%{HTTPS_HOST}%{REQUEST_URI}'],
+            rewrite_rule => ['(.*) https://%{HTTP_HOST}%{REQUEST_URI}'],
           }
         ]
       }
