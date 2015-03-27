@@ -1,4 +1,7 @@
-- Added support for Debian 6, 7
+## 0.4.0  (2015-03-27)
+
+- Added support for Debian 6, 7, 8
+- Fixed Apache HTTP -> HTTPS redirect
 - Fixed MySQL database export for RedHat family OSes
 - Fixed spec tests to pass when tests are done with FUTURE_PARSER=yes and STRICT_VARIABLES=yes
 
