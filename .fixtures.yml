@@ -1,8 +1,12 @@
 fixtures:
   repositories:
     apache: "https://github.com/puppetlabs/puppetlabs-apache.git"
-    apt: "https://github.com/puppetlabs/puppetlabs-apt.git"
-    concat: "https://github.com/puppetlabs/puppetlabs-concat.git"
+    apt:
+      repo: "https://github.com/puppetlabs/puppetlabs-apt.git"
+      ref: "1.7.0"
+    concat:
+      repo: "https://github.com/puppetlabs/puppetlabs-concat.git"
+      ref: "1.2.0"
     epel: "https://github.com/stahnma/puppet-module-epel.git"
     mysql: "https://github.com/puppetlabs/puppetlabs-mysql.git"
     stdlib: "https://github.com/puppetlabs/puppetlabs-stdlib.git"
