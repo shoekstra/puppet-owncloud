@@ -13,7 +13,6 @@ class owncloud::install {
           location    => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/Debian_${::operatingsystemmajrelease}.0/",
           release     => '',
           repos       => '/',
-          include_src => false,
           key         => {
             id        => 'BA684223',
             source    => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_${::operatingsystemrelease}/Release.key",
@@ -28,7 +27,6 @@ class owncloud::install {
           location    => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_${::operatingsystemrelease}/",
           release     => '',
           repos       => '/',
-          include_src => false,
           key         => {
             id        => 'BA684223',
             source    => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_${::operatingsystemrelease}/Release.key",
