@@ -11,10 +11,10 @@ class owncloud::install {
 
         apt::source { 'owncloud':
           location    => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/Debian_${::operatingsystemmajrelease}.0/",
-          release     => '',
+          release     => ' ',
           repos       => '/',
           key         => {
-            id        => 'BA684223',
+            id        => 'F9EA4996747310AE79474F44977C43A8BA684223',
             source    => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_${::operatingsystemrelease}/Release.key",
           },
           before      => Package[$::owncloud::package_name],
@@ -25,10 +25,10 @@ class owncloud::install {
 
         apt::source { 'owncloud':
           location    => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_${::operatingsystemrelease}/",
-          release     => '',
+          release     => ' ',
           repos       => '/',
           key         => {
-            id        => 'BA684223',
+            id        => 'F9EA4996747310AE79474F44977C43A8BA684223',
             source    => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_${::operatingsystemrelease}/Release.key",
           },
           before      => Package[$::owncloud::package_name],
