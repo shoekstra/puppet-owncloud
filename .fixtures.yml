@@ -5,6 +5,7 @@ fixtures:
     concat: "https://github.com/puppetlabs/puppetlabs-concat.git"
     epel: "https://github.com/stahnma/puppet-module-epel.git"
     mysql: "https://github.com/puppetlabs/puppetlabs-mysql.git"
+    remi: "https://github.com/ckhall/puppet-module-remi.git"
     stdlib: "https://github.com/puppetlabs/puppetlabs-stdlib.git"
   symlinks:
     owncloud: "#{source_dir}"

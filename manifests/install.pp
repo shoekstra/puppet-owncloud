@@ -43,6 +43,22 @@ class owncloud::install {
       'CentOS': {
         include ::epel
 
+        if $::operatingsystemmajrelease == '6' {
+          include ::remi
+
+          yumrepo { 'remi-php56':
+            name       => 'remi-php56',
+            descr      => 'Les RPM de remi de PHP 5.6 pour Enterprise Linux 6 - $basearch',
+            baseurl    => absent,
+            mirrorlist => 'http://rpms.famillecollet.com/enterprise/6/php56/mirror',
+            gpgcheck   => 1,
+            gpgkey     => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-remi',
+            enabled    => 1,
+            before     => Package[$::owncloud::package_name],
+            require    => Class['::remi']
+          }
+        }
+
         yumrepo { 'isv:ownCloud:community':
           name     => 'isv_ownCloud_community',
           descr    => "Latest stable community release of ownCloud (CentOS_CentOS-${::operatingsystemmajrelease})",

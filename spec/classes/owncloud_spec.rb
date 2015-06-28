@@ -128,6 +128,22 @@ describe 'owncloud' do
               when 'CentOS'
                 is_expected.to contain_class('epel')
 
+                if facts[:operatingsystemmajrelease] == '6'
+                  is_expected.to contain_class('remi')
+
+                  is_expected.to contain_yumrepo('remi-php56').with(
+                    name: 'remi-php56',
+                    descr: 'Les RPM de remi de PHP 5.6 pour Enterprise Linux 6 - $basearch',
+                    mirrorlist: 'http://rpms.famillecollet.com/enterprise/6/php56/mirror',
+                    gpgcheck: 1,
+                    gpgkey: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-remi',
+                    enabled: 1
+                  ).that_comes_before('Package[owncloud]').that_requires('Class[remi]')
+                else
+                  is_expected.not_to contain_class('remi')
+                  is_expected.not_to contain_yumrepo('remi-php56')
+                end
+
                 is_expected.to contain_yumrepo('isv:ownCloud:community').with(
                   name: 'isv_ownCloud_community',
                   # descr: "Latest stable community release of ownCloud (CentOS_CentOS-#{facts[:operatingsystemmajrelease]})",
