@@ -104,6 +104,12 @@ describe 'owncloud' do
                   repos: '/'
                 ).that_comes_before('Package[owncloud]')
               when 'Ubuntu'
+                if facts[:lsbdistcodename] == 'precise'
+                  is_expected.to contain_apt__ppa('ppa:ondrej/php5-oldstable').that_comes_before('Package[owncloud]')
+                else
+                  is_expected.not_to contain_apt__ppa('ppa:ondrej/php5-oldstable').that_comes_before('Package[owncloud]')
+                end
+
                 is_expected.to contain_apt__source('owncloud').with(
                   location: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_#{facts[:operatingsystemrelease]}/",
                   key: {
