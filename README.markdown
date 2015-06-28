@@ -298,7 +298,6 @@ Configures the virtual host to install if `manage_apache` or `manage_vhost` are 
 
     * CentOS 6
     * CentOS 7
-    * Debian 6
     * Debian 7
     * Debian 8
     * Fedora 19
