@@ -1,3 +1,10 @@
+## 0.4.1  (2015-07-19)
+
+- Fixed missing PHP5 package on CentOS 6
+- Fixed missing PHP5 package on Precise ([#8](https://github.com/shoekstra/puppet-owncloud/issues/8))
+- Fixed old dependency versions ([#13](https://github.com/shoekstra/puppet-owncloud/issues/13), [#16](https://github.com/shoekstra/puppet-owncloud/issues/16))
+- Removed support for Debian 6 and Fedora 19 (no longer supported by ownCloud)
+
 ## 0.4.0  (2015-03-27)
 
 - Added support for Debian 6, 7, 8
