@@ -35,6 +35,7 @@ class owncloud::params {
           $datadirectory = '/var/www/html/owncloud/data'
           $documentroot  = '/var/www/html/owncloud'
           $package_name  = 'owncloud-server'
+          $package_name_phpmysql         = 'php-mysql'
           $www_user      = 'apache'
           $www_group     = 'apache'
 

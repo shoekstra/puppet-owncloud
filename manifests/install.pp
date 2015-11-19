@@ -88,4 +88,10 @@ class owncloud::install {
   package { $::owncloud::package_name:
     ensure => present,
   }
+  
+  if $::owncloud::package_name_phpmysql {
+	package { $::owncloud::package_name_phpmysql:
+		ensure => present,
+	}
+  }
 }
