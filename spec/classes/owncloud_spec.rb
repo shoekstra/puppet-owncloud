@@ -79,12 +79,12 @@ describe 'owncloud' do
             is_expected.to contain_class('owncloud::config').that_comes_before('owncloud')
             is_expected.to contain_class('owncloud')
 
-            is_expected.to contain_package('owncloud').with_ensure('present')
+            is_expected.to contain_package('owncloud-server').with_ensure('present')
           end
 
           # owncloud::install
 
-          it 'should include classes to manage repo, install owncloud repo and install owncloud package' do
+          it 'should include classes to manage repo, install owncloud repo and install owncloud-server package' do
             case facts[:osfamily]
             when 'Debian'
               is_expected.to contain_class('apt')
@@ -102,12 +102,12 @@ describe 'owncloud' do
                   },
                   release: ' ',
                   repos: '/'
-                ).that_comes_before('Package[owncloud]')
+                ).that_comes_before('Package[owncloud-server]')
               when 'Ubuntu'
                 if facts[:lsbdistcodename] == 'precise'
-                  is_expected.to contain_apt__ppa('ppa:ondrej/php5-oldstable').that_comes_before('Package[owncloud]')
+                  is_expected.to contain_apt__ppa('ppa:ondrej/php5-oldstable').that_comes_before('Package[owncloud-server]')
                 else
-                  is_expected.not_to contain_apt__ppa('ppa:ondrej/php5-oldstable').that_comes_before('Package[owncloud]')
+                  is_expected.not_to contain_apt__ppa('ppa:ondrej/php5-oldstable').that_comes_before('Package[owncloud-server]')
                 end
 
                 is_expected.to contain_apt__source('owncloud').with(
@@ -118,7 +118,7 @@ describe 'owncloud' do
                   },
                   release: ' ',
                   repos: '/'
-                ).that_comes_before('Package[owncloud]')
+                ).that_comes_before('Package[owncloud-server]')
               end
             when 'RedHat'
               is_expected.not_to contain_class('apt')
@@ -138,7 +138,7 @@ describe 'owncloud' do
                     gpgcheck: 1,
                     gpgkey: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-remi',
                     enabled: 1
-                  ).that_comes_before('Package[owncloud]').that_requires('Class[remi]')
+                  ).that_comes_before('Package[owncloud-server]').that_requires('Class[remi]')
                 else
                   is_expected.not_to contain_class('remi')
                   is_expected.not_to contain_yumrepo('remi-php56')
@@ -152,7 +152,7 @@ describe 'owncloud' do
                   gpgcheck: 1,
                   gpgkey: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/CentOS_CentOS-#{facts[:operatingsystemmajrelease]}/repodata/repomd.xml.key",
                   enabled: 1
-                ).that_comes_before('Package[owncloud]')
+                ).that_comes_before('Package[owncloud-server]')
               when 'Fedora'
                 is_expected.not_to contain_class('epel')
 
@@ -164,11 +164,11 @@ describe 'owncloud' do
                   gpgcheck: 1,
                   gpgkey: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/Fedora_#{facts[:operatingsystemmajrelease]}/repodata/repomd.xml.key",
                   enabled: 1
-                ).that_comes_before('Package[owncloud]')
+                ).that_comes_before('Package[owncloud-server]')
               end
             end
 
-            is_expected.to contain_package('owncloud').with_ensure('present')
+            is_expected.to contain_package('owncloud-server').with_ensure('present')
           end
 
           # owncloud::apache
@@ -408,7 +408,7 @@ describe 'owncloud' do
         }
       end
 
-      it { expect { is_expected.to contain_package('owncloud') }.to raise_error(Puppet::Error, /Nexenta not supported/) }
+      it { expect { is_expected.to contain_package('owncloud-server') }.to raise_error(Puppet::Error, /Nexenta not supported/) }
     end
   end
 end

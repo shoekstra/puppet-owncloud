@@ -25,7 +25,7 @@ describe 'owncloud class' do
       apply_manifest(pp, :catch_changes  => true)
     end
 
-    describe package('owncloud') do
+    describe package('owncloud-server') do
       it { is_expected.to be_installed }
     end
   end
