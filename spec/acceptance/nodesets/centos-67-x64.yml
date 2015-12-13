@@ -1,0 +1,12 @@
+HOSTS:
+  centos-67-x64:
+    roles:
+      - master
+    platform: el-6-x86_64
+    box: bento/centos-6.7
+    box_url: https://vagrantcloud.com/bento/boxes/centos-6.7
+    hypervisor: vagrant
+
+CONFIG:
+  log_level: verbose
+  type: foss

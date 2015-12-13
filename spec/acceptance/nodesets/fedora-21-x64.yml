@@ -1,10 +1,10 @@
 HOSTS:
-  centos-71-x64:
+  fedora-21-x64:
     roles:
       - master
     platform: el-7-x86_64
-    box: bento/centos-7.1
-    box_url: https://vagrantcloud.com/bento/boxes/centos-7.1
+    box: bento/fedora-21
+    box_url: https://vagrantcloud.com/bento/boxes/fedora-21
     hypervisor: vagrant
 
 CONFIG:

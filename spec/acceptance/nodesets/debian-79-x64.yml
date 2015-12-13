@@ -1,0 +1,12 @@
+HOSTS:
+  debian-79-x64:
+    roles:
+      - master
+    platform: debian-7-amd64
+    box: bento/debian-7.9
+    box_url: https://vagrantcloud.com/bento/boxes/debian-7.9
+    hypervisor: vagrant
+
+CONFIG:
+  log_level: verbose
+  type: foss

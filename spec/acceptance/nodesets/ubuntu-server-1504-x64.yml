@@ -1,0 +1,12 @@
+HOSTS:
+  ubuntu-server-1504-x64:
+    roles:
+      - master
+    platform: ubuntu-1504-amd64
+    box: bento/ubuntu-15.04
+    box_url: https://vagrantcloud.com/bento/boxes/ubuntu-15.04
+    hypervisor: vagrant
+
+CONFIG:
+  log_level: verbose
+  type: foss
