@@ -1,3 +1,8 @@
+## 0.4.2  (2015-12-13)
+
+- Install owncloud-server instead of owncloud, removes Apache dependency ([#21](https://github.com/shoekstra/puppet-owncloud/pull/21))
+- Fixed puppet-lint warning
+
 ## 0.4.1  (2015-07-19)
 
 - Fixed missing PHP5 package on CentOS 6
