@@ -15,7 +15,7 @@ class owncloud::params {
           $www_group     = 'www-data'
 
           if ($::operatingsystem == 'Debian' and versioncmp($::operatingsystemrelease, '6') <= 0) {
-            fail("${::operatingsystem} $::operatingsystemrelease not supported")
+            fail("${::operatingsystem} ${::operatingsystemrelease} not supported")
           }
 
           if ($::operatingsystem == 'Debian' and versioncmp($::operatingsystemrelease, '8') >= 0) or ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '13.10') >= 0)  {
