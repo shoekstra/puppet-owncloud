@@ -1,3 +1,7 @@
+## 0.4.3  (2015-12-13)
+
+- Fix compilation errors on CentOS systems
+
 ## 0.4.2  (2015-12-13)
 
 - Install owncloud-server instead of owncloud, removes Apache dependency ([#21](https://github.com/shoekstra/puppet-owncloud/pull/21))
