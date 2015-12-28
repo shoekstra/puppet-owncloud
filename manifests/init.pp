@@ -12,6 +12,7 @@ class owncloud (
   $https_port      = 443,
   $manage_apache   = true,
   $manage_db       = true,
+  $manage_phpmysql = true,
   $manage_repo     = true,
   $manage_skeleton = true,
   $manage_vhost    = true,

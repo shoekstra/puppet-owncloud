@@ -238,6 +238,10 @@ Set to true for the module to install Apache using the [PuppetLabs Apache module
 
 Set to true for the module to create the database and database user for you, using the `db_name`, `db_user`, `db_pass` and `db_type` values. Enabling this will not install the database server, this must be done separately. Defaults to 'true'.
 
+##### `manage_phpmysql`
+
+Set to true for the module to install the PHP MySQL bindings using the [PuppetLabs MySQL module](https://github.com/puppetlabs/puppetlabs-mysql); this is required on some distributions until the package is installed by the ownCloud package. Defaults to 'true'.
+
 ##### `manage_repo`
 
 Set to true for the module to install the official ownCloud repository. Defaults to 'true'.
