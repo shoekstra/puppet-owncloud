@@ -92,6 +92,8 @@ describe 'owncloud' do
               is_expected.not_to contain_class('epel')
               is_expected.not_to contain_yumrepo('isv:ownCloud:community')
 
+              is_expected.to contain_file('/etc/apache2/sites-enabled/000-default.conf').with_ensure('absent').that_requires('Class[apache]').that_notifies('Class[apache::service]')
+
               case facts[:operatingsystem]
               when 'Debian'
                 is_expected.to contain_apt__source('owncloud').with(
