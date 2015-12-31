@@ -5,6 +5,7 @@
 class owncloud (
   $db_host         = 'localhost',
   $db_name         = 'owncloud',
+  $db_table_prefix = '',
   $db_pass         = 'owncloud',
   $db_user         = 'owncloud',
   $db_type         = 'mysql',

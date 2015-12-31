@@ -210,6 +210,10 @@ Sets the database server that ownCloud should use. If this is not 'localhost' an
 
 Set the database name in the ownCloud configuration and the database to create if `manage_db` is set to true. Defaults to 'owncloud'.
 
+##### `db_table_prefix`
+
+Set the database table prefix in the ownCloud configuration. Defaults to ''.
+
 ##### `db_user`
 
 Set the database user in the ownCloud configuration and the database user to create (using `db_pass` as the password) if `manage_db` is set to true. Defaults to 'owncloud'.

@@ -41,6 +41,7 @@ class owncloud::config {
   # Template uses:
   $db_host = $::owncloud::db_host
   $db_name = $::owncloud::db_name
+  $db_table_prefix = $::owncloud::db_table_prefix
   $db_pass = $::owncloud::db_pass
   $db_user = $::owncloud::db_user
   $db_type = $::owncloud::db_type

@@ -312,7 +312,7 @@ describe 'owncloud' do
           end
 
           describe 'when remaining db_parameters are set' do
-            let(:params) { { db_name: 'test', db_user: 'test', db_pass: 'test' } }
+            let(:params) { { db_name: 'test', db_table_prefix: 'test', db_user: 'test', db_pass: 'test' } }
 
             it 'should populate database parameters and autoconfig.php.erb correctly' do
               is_expected.to contain_mysql__db('test').with(
@@ -323,6 +323,7 @@ describe 'owncloud' do
               is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/^  "dbname"(\ *)=> "test",$/)
               is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/^  "dbuser"(\ *)=> "test",$/)
               is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/^  "dbpass"(\ *)=> "test",$/)
+              is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/^  "dbtableprefix"(\ *)=> "test",$/)
             end
           end
 
