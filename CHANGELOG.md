@@ -1,3 +1,13 @@
+## 0.5.0  (2015-01-02)
+
+- Added `$db_table_prefix parameter`, configures a database table prefix
+- Added support for Puppet 4.x
+- Added SSL cipers and accepted protocols ([#22](https://github.com/shoekstra/puppet-owncloud/pull/22))
+- Increased supported version of [EPEL puppet module](https://github.com/stahnma/puppet-module-epel)
+- Installs PHP MySQL bindings using the [PuppetLabs MySQL puppet module](https://github.com/puppetlabs/puppetlabs-mysql) if `$manage_phpmysql` is `true` ([#14](https://github.com/shoekstra/puppet-owncloud/iss
+ues/14))
+- Removes default vhost (000-default.conf) on Debian-based systems if `$manage_apache` is `true`
+
 ## 0.4.3  (2015-12-13)
 
 - Fix compilation errors on CentOS systems
