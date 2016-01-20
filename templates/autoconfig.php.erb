@@ -1,5 +1,11 @@
 <?php
 $AUTOCONFIG = array(
+<% unless @admin_user.empty? -%>
+  "adminlogin"    => "<%= @admin_user %>",
+<% end -%>
+<% unless @admin_pass.empty? -%>
+  "adminpass"     => "<%= @admin_pass %>",
+<% end -%>
   "dbtype"        => "<%= @db_type %>",
   "dbname"        => "<%= @db_name %>",
   "dbuser"        => "<%= @db_user %>",
@@ -7,4 +13,7 @@ $AUTOCONFIG = array(
   "dbhost"        => "<%= @db_host %>",
   "dbtableprefix" => "<%= @db_table_prefix %>",
   "directory"     => "<%= @datadirectory %>",
+<% unless @trusted_domains.empty? -%>
+  "trusted_domains" => <%= @trusted_domains %>,
+<% end -%>
 );

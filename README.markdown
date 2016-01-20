@@ -198,9 +198,17 @@ The `owncloud` class configures all possible options for this module. With defau
 
 #### Parameters
 
+##### `admin_pass`
+
+Optionally set the admin password in the ownCloud configuration. 
+
+##### `admin_user`
+
+Optionally set the admin user in the ownCloud configuration (using `admin_pass` as the password). If not set, OwnCloud will ask for admin credentials upon first connection.  
+
 ##### `datadirectory`
 
-Sets the directory user data will be stored in. It is not recommended to keep this in the default location (as a sub directory of the application document root) and it should be moved out of the document root before making your ownCloud instance accessible via the internet. Defaults to '/var/www/owncloud/data' on Debian based systems and `/var/www/html/owncloud/data` on RedHat based systems.
+Sets the directory user data will be stored in. It is not recommended to keep this in the default location (as a sub directory of the application document root) and it should be moved out of the document root before making your ownCloud instance accessible via the internet. Defaults to `/var/www/owncloud/data` on Debian based systems and `/var/www/html/owncloud/data` on RedHat based systems.
 
 ##### `db_host`
 
@@ -220,7 +228,7 @@ Set the database user in the ownCloud configuration and the database user to cre
 
 ##### `db_pass`
 
-Set the database user in the ownCloud configuration. Defaults to 'owncloud'.
+Set the database password in the ownCloud configuration. Defaults to 'owncloud'.
 
 ##### `db_type`
 
@@ -277,6 +285,10 @@ Set the path of the certificate chain file, must use the absolute path.
 ##### `ssl_key`
 
 Set the path of the certificate key file, must use the absolute path.
+
+##### `trusted_domains`
+
+Optional array to set the default trusted domains for OwnCloud. Use domain names without protocol. Default is unset, which will take the first domain used to connect to OwnCloud as a trusted domain name. 
 
 ##### `url`
 

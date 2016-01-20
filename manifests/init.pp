@@ -3,6 +3,8 @@
 # Puppet class to install and configure ownCloud.
 #
 class owncloud (
+  $admin_pass      = '',
+  $admin_user      = '',
   $db_host         = 'localhost',
   $db_name         = 'owncloud',
   $db_table_prefix = '',
@@ -22,6 +24,7 @@ class owncloud (
   $ssl_cert        = undef,
   $ssl_chain       = undef,
   $ssl_key         = undef,
+  $trusted_domains = '',
   $url             = "owncloud.${::domain}",
   $datadirectory   = $::owncloud::params::datadirectory,
 ) inherits ::owncloud::params {
@@ -47,3 +50,4 @@ class owncloud (
   class { '::owncloud::config': } ->
   Class['::owncloud']
 }
+

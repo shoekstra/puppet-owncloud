@@ -39,12 +39,15 @@ class owncloud::config {
   }
 
   # Template uses:
+  $admin_pass = $::owncloud::admin_pass
+  $admin_user = $::owncloud::admin_user
   $db_host = $::owncloud::db_host
   $db_name = $::owncloud::db_name
   $db_table_prefix = $::owncloud::db_table_prefix
   $db_pass = $::owncloud::db_pass
   $db_user = $::owncloud::db_user
   $db_type = $::owncloud::db_type
+  $trusted_domains = $::owncloud::trusted_domains
   $datadirectory = $::owncloud::datadirectory
 
   file { "${::owncloud::documentroot}/config/autoconfig.php":
@@ -59,10 +62,11 @@ class owncloud::config {
       "${::owncloud::documentroot}/core/skeleton/documents",
       "${::owncloud::documentroot}/core/skeleton/music",
       "${::owncloud::documentroot}/core/skeleton/photos",
-      ]:
+    ]:
       ensure  => directory,
       recurse => true,
       purge   => true,
     }
   }
 }
+

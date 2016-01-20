@@ -326,6 +326,23 @@ describe 'owncloud' do
               is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/^  "dbtableprefix"(\ *)=> "test",$/)
             end
           end
+          
+          describe 'when admin login credentials are set' do
+           let(:params) { { admin_user: 'test', admin_pass: 'test'} }
+
+            it 'should populate autoconfig.php.erb correctly' do
+              is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/^  "adminlogin"(\ *)=> "test",$/)
+              is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/^  "adminpass"(\ *)=> "test",$/)
+            end
+          end
+          
+          describe 'when trusted_domains are set' do
+           let(:params) { { trusted_domains: ['test']} }
+
+            it 'should populate autoconfig.php.erb correctly' do
+              is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/^  "trusted_domains"(\ *)=> \["test"\],$/)
+            end
+          end
 
           describe 'when datadirectory is set to "/test"' do
             let(:params) { { datadirectory: '/test' } }
