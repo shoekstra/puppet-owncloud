@@ -42,8 +42,8 @@
   ],
   "dependencies": [
     {
-      "name": "ckhall/remi",
-      "version_requirement": ">= 0.0.2 < 0.1.0"
+      "name": "m0byd1ck/remi",
+      "version_requirement": ">= 1.0.3"
     },
     {
       "name": "puppetlabs/apache",
