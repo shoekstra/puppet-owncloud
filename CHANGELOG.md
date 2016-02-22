@@ -1,3 +1,7 @@
+## Unreleased
+### Added
+- Options for setting ssl\_cipher and ssl\_protocol Apache settings
+
 ## 0.5.0  (2015-01-02)
 
 - Added `$db_table_prefix parameter`, configures a database table prefix

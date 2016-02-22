@@ -282,9 +282,19 @@ Set the path of the certificate file, must use the absolute path.
 
 Set the path of the certificate chain file, must use the absolute path.
 
+##### `ssl_cipher`
+
+Specify the Apache SSL Ciphers to use. See the [Apache Docs](http://httpd.apache.org/docs/2.4/mod/mod_ssl.html#sslciphersuite) for more details.
+Defaults to `ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:ECDHE-RSA-DES-CBC3-SHA:ECDHE-ECDSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA`.
+
 ##### `ssl_key`
 
 Set the path of the certificate key file, must use the absolute path.
+
+##### `ssl_protocol`
+
+Set the Apache SSL Protocols for SSL / TLS versions. See the [Apache Docs](http://httpd.apache.org/docs/2.4/mod/mod_ssl.html#sslprotocol) for more details.
+Defaults to `all -SSLv2 -SSLv3`.
 
 ##### `trusted_domains`
 
