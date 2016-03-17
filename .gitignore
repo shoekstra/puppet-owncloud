@@ -2,6 +2,7 @@
 .rspec_system
 .vagrant
 .bundle
+.idea
 Gemfile.lock
 log
 pkg
