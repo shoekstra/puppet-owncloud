@@ -181,10 +181,38 @@ describe 'owncloud' do
 
             is_expected.to contain_class('apache::mod::php')
 
-            is_expected.to contain_apache__vhost('owncloud-http')
-
             # check apache vhost is generated properly
 
+            vhost_params = {
+              'servername'                  => 'owncloud.example.com',
+              'port'                        => '80',
+              'docroot'                     => "#{documentroot}",
+              'docroot_owner'               => 'root',
+              'docroot_group'               => 'root',
+              'directories'                 => {
+                'path'             => "#{documentroot}",
+                'options'          => ['Indexes', 'FollowSymLinks', 'MultiViews'],
+                'allow_override'   => 'All',
+                'custom_fragment'  => 'Dav Off',
+              }
+            }
+            if apache_version == '2.2'
+              vhost_params['directories'] = vhost_params['directories'].merge({
+                'order'    => 'allow,deny',
+                'allow'    => 'from All',
+                'satisfy'  => 'Any',
+              })
+            else
+              vhost_params['directories'] = vhost_params['directories'].merge({
+                'require'  => 'all granted',
+              })
+            end
+
+            is_expected.to contain_apache__vhost('owncloud-http').with(vhost_params)
+            is_expected.not_to contain_apache__vhost('owncloud-https')
+
+
+=begin
             [
               /<VirtualHost \*:80>/,
               /ServerName owncloud./
@@ -216,9 +244,7 @@ describe 'owncloud' do
 
             vhost_dir_config.each do |line|
               is_expected.to contain_File('/var/lib/puppet/concat/25-owncloud-http.conf/fragments/60_owncloud-http-directories').with_content(line)
-            end
-
-            is_expected.not_to contain_apache__vhost('owncloud-https')
+=end
           end
 
           # owncloud::config
