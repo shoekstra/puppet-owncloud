@@ -49,10 +49,10 @@ class owncloud::install {
 
         yumrepo { 'isv:ownCloud:community':
           name     => 'isv_ownCloud_community',
-          descr    => "Latest stable community release of ownCloud (CentOS_CentOS-${::operatingsystemmajrelease})",
-          baseurl  => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/CentOS_CentOS-${::operatingsystemmajrelease}/",
+          descr    => "ownCloud Server Version stable (CentOS_${::operatingsystemmajrelease})",
+          baseurl  => "https://download.owncloud.org/download/repositories/stable/CentOS_${::operatingsystemmajrelease}/",
           gpgcheck => 1,
-          gpgkey   => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/CentOS_CentOS-${::operatingsystemmajrelease}/repodata/repomd.xml.key",
+          gpgkey   => "https://download.owncloud.org/download/repositories/stable/CentOS_${::operatingsystemmajrelease}/repodata/repomd.xml.key",
           enabled  => 1,
           before   => Package[$::owncloud::package_name],
         }

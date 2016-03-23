@@ -18,6 +18,7 @@ describe 'owncloud' do
           apache_group = 'www-data'
           datadirectory = '/var/www/owncloud/data'
           documentroot = '/var/www/owncloud'
+          package_name = 'owncloud-server'
 
           case facts[:operatingsystem]
           when 'Debian'
@@ -41,12 +42,14 @@ describe 'owncloud' do
 
           case facts[:operatingsystem]
           when 'Fedora'
+            package_name = 'owncloud-server'
             if (Versionomy.parse(facts[:operatingsystemrelease]) > Versionomy.parse('18')) || (Versionomy.parse(facts[:operatingsystemrelease]) == Versionomy.parse('18'))
               apache_version = '2.4'
             else
               apache_version = '2.2'
             end
           else
+            package_name = 'owncloud'
             if (Versionomy.parse(facts[:operatingsystemrelease]) > Versionomy.parse('7')) || (Versionomy.parse(facts[:operatingsystemrelease]) == Versionomy.parse('7'))
               apache_version = '2.4'
             else
@@ -79,12 +82,12 @@ describe 'owncloud' do
             is_expected.to contain_class('owncloud::config').that_comes_before('owncloud')
             is_expected.to contain_class('owncloud')
 
-            is_expected.to contain_package('owncloud-server').with_ensure('present')
+            is_expected.to contain_package("#{package_name}").with_ensure('present')
           end
 
           # owncloud::install
 
-          it 'should include classes to manage repo, install owncloud repo and install owncloud-server package' do
+          it 'should include classes to manage repo, install owncloud repo and install owncloud server package' do
             case facts[:osfamily]
             when 'Debian'
               is_expected.to contain_class('apt')
@@ -104,12 +107,12 @@ describe 'owncloud' do
                   },
                   release: ' ',
                   repos: '/'
-                ).that_comes_before('Package[owncloud-server]')
+                ).that_comes_before("Package[#{package_name}]")
               when 'Ubuntu'
                 if facts[:lsbdistcodename] == 'precise'
-                  is_expected.to contain_apt__ppa('ppa:ondrej/php5-oldstable').that_comes_before('Package[owncloud-server]')
+                  is_expected.to contain_apt__ppa('ppa:ondrej/php5-oldstable').that_comes_before("Package[#{package_name}]")
                 else
-                  is_expected.not_to contain_apt__ppa('ppa:ondrej/php5-oldstable').that_comes_before('Package[owncloud-server]')
+                  is_expected.not_to contain_apt__ppa('ppa:ondrej/php5-oldstable').that_comes_before("Package[#{package_name}]")
                 end
 
                 is_expected.to contain_apt__source('owncloud').with(
@@ -120,7 +123,7 @@ describe 'owncloud' do
                   },
                   release: ' ',
                   repos: '/'
-                ).that_comes_before('Package[owncloud-server]')
+                ).that_comes_before("Package[#{package_name}]")
               end
             when 'RedHat'
               is_expected.not_to contain_class('apt')
@@ -141,12 +144,12 @@ describe 'owncloud' do
                 is_expected.to contain_yumrepo('isv:ownCloud:community').with(
                   name: 'isv_ownCloud_community',
                   # descr: "Latest stable community release of ownCloud (CentOS_CentOS-#{facts[:operatingsystemmajrelease]})",
-                  descr: "Latest stable community release of ownCloud (CentOS_CentOS-#{facts[:operatingsystemmajrelease]})",
-                  baseurl: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/CentOS_CentOS-#{facts[:operatingsystemmajrelease]}/",
+                  descr: "ownCloud Server Version stable (CentOS_#{facts[:operatingsystemmajrelease]})",
+                  baseurl: "https://download.owncloud.org/download/repositories/stable/CentOS_#{facts[:operatingsystemmajrelease]}/",
                   gpgcheck: 1,
-                  gpgkey: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/CentOS_CentOS-#{facts[:operatingsystemmajrelease]}/repodata/repomd.xml.key",
+                  gpgkey: "https://download.owncloud.org/download/repositories/stable/CentOS_#{facts[:operatingsystemmajrelease]}/repodata/repomd.xml.key",
                   enabled: 1
-                ).that_comes_before('Package[owncloud-server]')
+                ).that_comes_before("Package[#{package_name}]")
               when 'Fedora'
                 is_expected.not_to contain_class('epel')
 
@@ -158,11 +161,11 @@ describe 'owncloud' do
                   gpgcheck: 1,
                   gpgkey: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/Fedora_#{facts[:operatingsystemmajrelease]}/repodata/repomd.xml.key",
                   enabled: 1
-                ).that_comes_before('Package[owncloud-server]')
+                ).that_comes_before("Package[#{package_name}]")
               end
             end
 
-            is_expected.to contain_package('owncloud-server').with_ensure('present')
+            is_expected.to contain_package("#{package_name}").with_ensure('present')
           end
 
           # owncloud::apache
@@ -178,10 +181,38 @@ describe 'owncloud' do
 
             is_expected.to contain_class('apache::mod::php')
 
-            is_expected.to contain_apache__vhost('owncloud-http')
-
             # check apache vhost is generated properly
 
+            vhost_params = {
+              'servername'                  => 'owncloud.example.com',
+              'port'                        => '80',
+              'docroot'                     => "#{documentroot}",
+              'docroot_owner'               => 'root',
+              'docroot_group'               => 'root',
+              'directories'                 => {
+                'path'             => "#{documentroot}",
+                'options'          => ['Indexes', 'FollowSymLinks', 'MultiViews'],
+                'allow_override'   => 'All',
+                'custom_fragment'  => 'Dav Off',
+              }
+            }
+            if apache_version == '2.2'
+              vhost_params['directories'] = vhost_params['directories'].merge({
+                'order'    => 'allow,deny',
+                'allow'    => 'from All',
+                'satisfy'  => 'Any',
+              })
+            else
+              vhost_params['directories'] = vhost_params['directories'].merge({
+                'require'  => 'all granted',
+              })
+            end
+
+            is_expected.to contain_apache__vhost('owncloud-http').with(vhost_params)
+            is_expected.not_to contain_apache__vhost('owncloud-https')
+
+
+=begin
             [
               /<VirtualHost \*:80>/,
               /ServerName owncloud./
@@ -213,9 +244,7 @@ describe 'owncloud' do
 
             vhost_dir_config.each do |line|
               is_expected.to contain_File('/var/lib/puppet/concat/25-owncloud-http.conf/fragments/60_owncloud-http-directories').with_content(line)
-            end
-
-            is_expected.not_to contain_apache__vhost('owncloud-https')
+=end
           end
 
           # owncloud::config
@@ -413,6 +442,7 @@ describe 'owncloud' do
 
   context 'unsupported operating system' do
     describe 'owncloud class without any parameters on Solaris/Nexenta' do
+      package_name = 'owncloud-server'
       let(:facts) do
         {
           osfamily: 'Solaris',
@@ -420,7 +450,7 @@ describe 'owncloud' do
         }
       end
 
-      it { expect { is_expected.to contain_package('owncloud-server') }.to raise_error(Puppet::Error, /Nexenta not supported/) }
+      it { expect { is_expected.to contain_package("#{package_name}") }.to raise_error(Puppet::Error, /Nexenta not supported/) }
     end
   end
 end
