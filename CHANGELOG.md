@@ -1,3 +1,7 @@
+## Unreleased
+### Added
+- Option to disable OS package management
+
 ## 0.5.2  (2016-03-23)
 
 - Added option to specify admin credentials ([#27](https://github.com/shoekstra/puppet-owncloud/pull/27))

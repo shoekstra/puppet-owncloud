@@ -15,8 +15,9 @@ class owncloud (
   $https_port      = 443,
   $manage_apache   = true,
   $manage_db       = true,
+  $manage_package  = true,
   $manage_phpmysql = true,
-  $manage_repo     = true,
+  $manage_repo     = pick($manage_package, true),
   $manage_skeleton = true,
   $manage_vhost    = true,
   $ssl             = false,
@@ -31,6 +32,7 @@ class owncloud (
 
   validate_bool($manage_apache)
   validate_bool($manage_db)
+  validate_bool($manage_package)
   validate_bool($manage_repo)
   validate_bool($manage_skeleton)
   validate_bool($manage_vhost)

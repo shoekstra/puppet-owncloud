@@ -74,13 +74,21 @@ class owncloud::install {
   }
 
   if $::owncloud::manage_phpmysql {
-    class { '::mysql::bindings':
-      php_enable => true,
-      before     => Package[$::owncloud::package_name],
+    if $::owncloud::manage_package {
+      class { '::mysql::bindings':
+        php_enable => true,
+        before     => Package[$::owncloud::package_name],
+      }
+    } else {
+      class { '::mysql::bindings':
+        php_enable => true,
+      }
     }
   }
 
-  package { $::owncloud::package_name:
-    ensure => present,
+  if $::owncloud::manage_package {
+    package { $::owncloud::package_name:
+      ensure => present,
+    }
   }
 }
