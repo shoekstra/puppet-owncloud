@@ -17,7 +17,7 @@ class owncloud (
   $manage_db       = true,
   $manage_package  = true,
   $manage_phpmysql = true,
-  $manage_repo     = $manage_package,
+  $manage_repo     = pick($manage_package, true),
   $manage_skeleton = true,
   $manage_vhost    = true,
   $ssl             = false,
