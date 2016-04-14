@@ -80,7 +80,9 @@ class owncloud::install {
     }
   }
 
-  package { $::owncloud::package_name:
-    ensure => present,
+  if $::owncloud::manage_package {
+    package { $::owncloud::package_name:
+      ensure => present,
+    }
   }
 }
