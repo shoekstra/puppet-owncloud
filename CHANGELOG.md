@@ -2,7 +2,14 @@
 ### Added
 - Options for setting ssl\_cipher and ssl\_protocol Apache settings
 
-## 0.5.0  (2015-01-02)
+## 0.5.2  (2016-03-23)
+
+- Added option to specify admin credentials ([#27](https://github.com/shoekstra/puppet-owncloud/pull/27))
+- Added option to specify trusted domains ([#27](https://github.com/shoekstra/puppet-owncloud/pull/27))
+- Updated Centos 6/7 repository to now point to https://download.owncloud.org. ([#30](https://github.com/shoekstra/puppet-owncloud/pull/30))
+- Updated/Fixed spec tests ([#30](https://github.com/shoekstra/puppet-owncloud/pull/30))
+
+## 0.5.0  (2016-01-02)
 
 - Added `$db_table_prefix parameter`, configures a database table prefix
 - Added support for Puppet 4.x
