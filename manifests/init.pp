@@ -17,7 +17,7 @@ class owncloud (
   $manage_db       = true,
   $manage_package  = true,
   $manage_phpmysql = true,
-  $manage_repo     = true,
+  $manage_repo     = $manage_package,
   $manage_skeleton = true,
   $manage_vhost    = true,
   $ssl             = false,
@@ -45,12 +45,6 @@ class owncloud (
 
     if $ssl_ca { validate_absolute_path($ssl_ca) }
     if $ssl_chain { validate_absolute_path($ssl_chain) }
-  }
-
-  # If we're not managing the package, we probably don't need to
-  # manage the repository
-  unless $manage_package {
-    $manage_repo = false
   }
 
   class { '::owncloud::install': } ->
