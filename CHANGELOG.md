@@ -1,3 +1,7 @@
+## Unreleased
+### Added
+- Options for setting ssl\_cipher and ssl\_protocol Apache settings
+
 ## 0.5.2  (2016-03-23)
 
 - Added option to specify admin credentials ([#27](https://github.com/shoekstra/puppet-owncloud/pull/27))
