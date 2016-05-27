@@ -332,7 +332,6 @@ Configures the virtual host to install if `manage_apache` or `manage_vhost` are 
     * Debian 8
     * Fedora 19
     * Fedora 20
-    * Ubuntu 12.04 Precise
     * Ubuntu 14.04 Trusty
 
 ## Development

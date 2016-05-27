@@ -28,11 +28,7 @@ describe 'owncloud' do
               apache_version = '2.2'
             end
           when 'Ubuntu'
-            if (Versionomy.parse(facts[:operatingsystemrelease]) > Versionomy.parse('13.10')) || (Versionomy.parse(facts[:operatingsystemrelease]) == Versionomy.parse('13.10'))
-              apache_version = '2.4'
-            else
-              apache_version = '2.2'
-            end
+            apache_version = '2.4'
           end
         when 'RedHat'
           apache_user = 'apache'
@@ -109,12 +105,6 @@ describe 'owncloud' do
                   repos: '/'
                 ).that_comes_before("Package[#{package_name}]")
               when 'Ubuntu'
-                if facts[:lsbdistcodename] == 'precise'
-                  is_expected.to contain_apt__ppa('ppa:ondrej/php5-oldstable').that_comes_before("Package[#{package_name}]")
-                else
-                  is_expected.not_to contain_apt__ppa('ppa:ondrej/php5-oldstable').that_comes_before("Package[#{package_name}]")
-                end
-
                 is_expected.to contain_apt__source('owncloud').with(
                   location: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_#{facts[:operatingsystemrelease]}/",
                   key: {

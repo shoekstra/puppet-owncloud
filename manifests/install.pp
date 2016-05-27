@@ -23,12 +23,6 @@ class owncloud::install {
       'Ubuntu': {
         include ::apt
 
-        if $::lsbdistcodename == 'precise' {
-          apt::ppa { 'ppa:ondrej/php5-oldstable':
-            before => Package[$::owncloud::package_name],
-          }
-        }
-
         apt::source { 'owncloud':
           location => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_${::operatingsystemrelease}/",
           release  => ' ',
