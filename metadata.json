@@ -35,8 +35,8 @@
   ],
   "dependencies": [
     {
-      "name": "m0byd1ck/remi",
-      "version_requirement": ">= 1.0.3"
+      "name": "example42/yum",
+      "version_requirement": ">= 2.1.27 < 3.0.0"
     },
     {
       "name": "puppetlabs/apache",
@@ -53,10 +53,6 @@
     {
       "name": "puppetlabs/stdlib",
       "version_requirement": ">= 2.4.0 < 5.0.0"
-    },
-    {
-      "name": "stahnma/epel",
-      "version_requirement": ">= 1.0.0 < 2.0.0"
     }
   ],
   "requirements": [

@@ -35,11 +35,8 @@ class owncloud::install {
         }
       }
       'CentOS': {
-        include ::epel
-
-        if $::operatingsystemmajrelease == '6' {
-          include ::remi
-        }
+        include ::yum::repo::epel
+        include ::yum::repo::remi_php70
 
         yumrepo { 'isv:ownCloud:community':
           name     => 'isv_ownCloud_community',

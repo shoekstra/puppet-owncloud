@@ -78,7 +78,8 @@ describe 'owncloud' do
             when 'Debian'
               is_expected.to contain_class('apt')
 
-              is_expected.not_to contain_class('epel')
+              is_expected.not_to contain_class('yum::repo::epel')
+              is_expected.not_to contain_class('yum::repo::remi_php70')
               is_expected.not_to contain_yumrepo('isv:ownCloud:community')
 
               is_expected.to contain_file('/etc/apache2/sites-enabled/000-default.conf').with_ensure('absent').that_requires('Class[apache]').that_notifies('Class[apache::service]')
@@ -109,15 +110,8 @@ describe 'owncloud' do
               is_expected.not_to contain_class('apt')
               is_expected.not_to contain_apt__source('owncloud')
 
-              is_expected.to contain_class('epel')
-
-              if facts[:operatingsystemmajrelease] == '6'
-                is_expected.to contain_class('remi')
-                is_expected.to contain_yumrepo('remi-php56')
-              else
-                is_expected.not_to contain_class('remi')
-                is_expected.not_to contain_yumrepo('remi-php56')
-              end
+              is_expected.to contain_class('yum::repo::epel')
+              is_expected.to contain_class('yum::repo::remi_php70')
 
               is_expected.to contain_yumrepo('isv:ownCloud:community').with(
                 name: 'isv_ownCloud_community',
@@ -278,7 +272,8 @@ describe 'owncloud' do
               when 'Debian'
                 is_expected.not_to contain_apt__source('owncloud')
               when 'RedHat'
-                is_expected.not_to contain_class('epel')
+                is_expected.not_to contain_class('yum::repo::epel')
+                is_expected.not_to contain_class('yum::repo::remi_php70')
                 is_expected.not_to contain_yumrepo('isv:ownCloud:community')
               end
 
