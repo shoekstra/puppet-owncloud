@@ -1,8 +1,8 @@
 HOSTS:
-  debian-82-x64:
+  debian-8-x64:
     roles:
       - master
-    platform: debian-7-amd64
+    platform: debian-8-amd64
     box: bento/debian-8.2
     box_url: https://vagrantcloud.com/bento/boxes/debian-8.2
     hypervisor: vagrant

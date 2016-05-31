@@ -1,5 +1,5 @@
 HOSTS:
-  centos-71-x64:
+  centos-7-x64:
     roles:
       - master
     platform: el-7-x86_64
