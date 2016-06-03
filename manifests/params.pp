@@ -10,7 +10,7 @@ class owncloud::params {
         'Debian', 'Ubuntu': {
           $datadirectory = '/var/www/owncloud/data'
           $documentroot  = '/var/www/owncloud'
-          $package_name  = 'owncloud-server'
+          $package_name  = 'owncloud'
           $www_user      = 'www-data'
           $www_group     = 'www-data'
 

@@ -18,7 +18,7 @@ describe 'owncloud' do
           apache_group = 'www-data'
           datadirectory = '/var/www/owncloud/data'
           documentroot = '/var/www/owncloud'
-          package_name = 'owncloud-server'
+          package_name = 'owncloud'
 
           case facts[:operatingsystem]
           when 'Debian'
@@ -87,20 +87,20 @@ describe 'owncloud' do
               case facts[:operatingsystem]
               when 'Debian'
                 is_expected.to contain_apt__source('owncloud').with(
-                  location: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/Debian_#{facts[:operatingsystemmajrelease]}.0/",
+                  location: "http://download.owncloud.org/download/repositories/stable/Debian_#{facts[:operatingsystemmajrelease]}/",
                   key: {
-                    'id' => 'F9EA4996747310AE79474F44977C43A8BA684223',
-                    'source' => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/Debian_#{facts[:operatingsystemmajrelease]}.0/Release.key"
+                    'id' => 'BCECA90325B072AB1245F739AB7C32C35180350A',
+                    'source' => "http://download.owncloud.org/download/repositories/stable/Debian_#{facts[:operatingsystemmajrelease]}/Release.key"
                   },
                   release: ' ',
                   repos: '/'
                 ).that_comes_before("Package[#{package_name}]")
               when 'Ubuntu'
                 is_expected.to contain_apt__source('owncloud').with(
-                  location: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_#{facts[:operatingsystemrelease]}/",
+                  location: "http://download.owncloud.org/download/repositories/stable/Ubuntu_#{facts[:operatingsystemrelease]}/",
                   key: {
-                    'id' => 'F9EA4996747310AE79474F44977C43A8BA684223',
-                    'source' => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_#{facts[:operatingsystemrelease]}/Release.key"
+                    'id' => 'BCECA90325B072AB1245F739AB7C32C35180350A',
+                    'source' => "http://download.owncloud.org/download/repositories/stable/Ubuntu_#{facts[:operatingsystemrelease]}/Release.key"
                   },
                   release: ' ',
                   repos: '/'
@@ -315,7 +315,7 @@ describe 'owncloud' do
               is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/^  "dbtableprefix"(\ *)=> "test",$/)
             end
           end
-          
+
           describe 'when admin login credentials are set' do
            let(:params) { { admin_user: 'test', admin_pass: 'test'} }
 
@@ -324,7 +324,7 @@ describe 'owncloud' do
               is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/^  "adminpass"(\ *)=> "test",$/)
             end
           end
-          
+
           describe 'when trusted_domains are set' do
            let(:params) { { trusted_domains: ['test']} }
 
