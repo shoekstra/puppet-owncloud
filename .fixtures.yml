@@ -3,9 +3,9 @@ fixtures:
     apache: "https://github.com/puppetlabs/puppetlabs-apache.git"
     apt: "https://github.com/puppetlabs/puppetlabs-apt.git"
     concat: "https://github.com/puppetlabs/puppetlabs-concat.git"
-    epel: "https://github.com/stahnma/puppet-module-epel.git"
     mysql: "https://github.com/puppetlabs/puppetlabs-mysql.git"
-    remi: "https://github.com/ckhall/puppet-module-remi.git"
+    puppi: "https://github.com/example42/puppi.git"
     stdlib: "https://github.com/puppetlabs/puppetlabs-stdlib.git"
+    yum: "https://github.com/example42/puppet-yum.git"
   symlinks:
     owncloud: "#{source_dir}"

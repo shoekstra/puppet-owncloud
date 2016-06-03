@@ -35,11 +35,8 @@ class owncloud::install {
         }
       }
       'CentOS': {
-        include ::epel
-
-        if $::operatingsystemmajrelease == '6' {
-          include ::remi
-        }
+        include ::yum::repo::epel
+        include ::yum::repo::remi_php70
 
         yumrepo { 'isv:ownCloud:community':
           name     => 'isv_ownCloud_community',
@@ -47,17 +44,6 @@ class owncloud::install {
           baseurl  => "https://download.owncloud.org/download/repositories/stable/CentOS_${::operatingsystemmajrelease}/",
           gpgcheck => 1,
           gpgkey   => "https://download.owncloud.org/download/repositories/stable/CentOS_${::operatingsystemmajrelease}/repodata/repomd.xml.key",
-          enabled  => 1,
-          before   => Package[$::owncloud::package_name],
-        }
-      }
-      'Fedora': {
-        yumrepo { 'isv:ownCloud:community':
-          name     => 'isv_ownCloud_community',
-          descr    => "Latest stable community release of ownCloud (Fedora_${::operatingsystemmajrelease})",
-          baseurl  => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/Fedora_${::operatingsystemmajrelease}/",
-          gpgcheck => 1,
-          gpgkey   => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/Fedora_${::operatingsystemmajrelease}/repodata/repomd.xml.key",
           enabled  => 1,
           before   => Package[$::owncloud::package_name],
         }

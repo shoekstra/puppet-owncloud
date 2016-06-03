@@ -28,33 +28,19 @@ describe 'owncloud' do
               apache_version = '2.2'
             end
           when 'Ubuntu'
-            if (Versionomy.parse(facts[:operatingsystemrelease]) > Versionomy.parse('13.10')) || (Versionomy.parse(facts[:operatingsystemrelease]) == Versionomy.parse('13.10'))
-              apache_version = '2.4'
-            else
-              apache_version = '2.2'
-            end
+            apache_version = '2.4'
           end
         when 'RedHat'
           apache_user = 'apache'
           apache_group = 'apache'
           datadirectory = '/var/www/html/owncloud/data'
           documentroot = '/var/www/html/owncloud'
+          package_name = 'owncloud'
 
-          case facts[:operatingsystem]
-          when 'Fedora'
-            package_name = 'owncloud-server'
-            if (Versionomy.parse(facts[:operatingsystemrelease]) > Versionomy.parse('18')) || (Versionomy.parse(facts[:operatingsystemrelease]) == Versionomy.parse('18'))
-              apache_version = '2.4'
-            else
-              apache_version = '2.2'
-            end
+          if (Versionomy.parse(facts[:operatingsystemrelease]) > Versionomy.parse('7')) || (Versionomy.parse(facts[:operatingsystemrelease]) == Versionomy.parse('7'))
+            apache_version = '2.4'
           else
-            package_name = 'owncloud'
-            if (Versionomy.parse(facts[:operatingsystemrelease]) > Versionomy.parse('7')) || (Versionomy.parse(facts[:operatingsystemrelease]) == Versionomy.parse('7'))
-              apache_version = '2.4'
-            else
-              apache_version = '2.2'
-            end
+            apache_version = '2.2'
           end
         end
 
@@ -92,7 +78,8 @@ describe 'owncloud' do
             when 'Debian'
               is_expected.to contain_class('apt')
 
-              is_expected.not_to contain_class('epel')
+              is_expected.not_to contain_class('yum::repo::epel')
+              is_expected.not_to contain_class('yum::repo::remi_php70')
               is_expected.not_to contain_yumrepo('isv:ownCloud:community')
 
               is_expected.to contain_file('/etc/apache2/sites-enabled/000-default.conf').with_ensure('absent').that_requires('Class[apache]').that_notifies('Class[apache::service]')
@@ -109,7 +96,6 @@ describe 'owncloud' do
                   repos: '/'
                 ).that_comes_before("Package[#{package_name}]")
               when 'Ubuntu'
-
                 is_expected.to contain_apt__source('owncloud').with(
                   location: "http://download.owncloud.org/download/repositories/stable/Ubuntu_#{facts[:operatingsystemrelease]}/",
                   key: {
@@ -124,40 +110,18 @@ describe 'owncloud' do
               is_expected.not_to contain_class('apt')
               is_expected.not_to contain_apt__source('owncloud')
 
-              case facts[:operatingsystem]
-              when 'CentOS'
-                is_expected.to contain_class('epel')
+              is_expected.to contain_class('yum::repo::epel')
+              is_expected.to contain_class('yum::repo::remi_php70')
 
-                if facts[:operatingsystemmajrelease] == '6'
-                  is_expected.to contain_class('remi')
-                  is_expected.to contain_yumrepo('remi-php56')
-                else
-                  is_expected.not_to contain_class('remi')
-                  is_expected.not_to contain_yumrepo('remi-php56')
-                end
-
-                is_expected.to contain_yumrepo('isv:ownCloud:community').with(
-                  name: 'isv_ownCloud_community',
-                  # descr: "Latest stable community release of ownCloud (CentOS_CentOS-#{facts[:operatingsystemmajrelease]})",
-                  descr: "ownCloud Server Version stable (CentOS_#{facts[:operatingsystemmajrelease]})",
-                  baseurl: "https://download.owncloud.org/download/repositories/stable/CentOS_#{facts[:operatingsystemmajrelease]}/",
-                  gpgcheck: 1,
-                  gpgkey: "https://download.owncloud.org/download/repositories/stable/CentOS_#{facts[:operatingsystemmajrelease]}/repodata/repomd.xml.key",
-                  enabled: 1
-                ).that_comes_before("Package[#{package_name}]")
-              when 'Fedora'
-                is_expected.not_to contain_class('epel')
-
-                is_expected.to contain_yumrepo('isv:ownCloud:community').with(
-                  name: 'isv_ownCloud_community',
-                  # descr: "Latest stable community release of ownCloud (Fedora_#{facts[:operatingsystemmajrelease]})",
-                  descr: "Latest stable community release of ownCloud (Fedora_#{facts[:operatingsystemmajrelease]})",
-                  baseurl: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/Fedora_#{facts[:operatingsystemmajrelease]}/",
-                  gpgcheck: 1,
-                  gpgkey: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/Fedora_#{facts[:operatingsystemmajrelease]}/repodata/repomd.xml.key",
-                  enabled: 1
-                ).that_comes_before("Package[#{package_name}]")
-              end
+              is_expected.to contain_yumrepo('isv:ownCloud:community').with(
+                name: 'isv_ownCloud_community',
+                # descr: "Latest stable community release of ownCloud (CentOS_CentOS-#{facts[:operatingsystemmajrelease]})",
+                descr: "ownCloud Server Version stable (CentOS_#{facts[:operatingsystemmajrelease]})",
+                baseurl: "https://download.owncloud.org/download/repositories/stable/CentOS_#{facts[:operatingsystemmajrelease]}/",
+                gpgcheck: 1,
+                gpgkey: "https://download.owncloud.org/download/repositories/stable/CentOS_#{facts[:operatingsystemmajrelease]}/repodata/repomd.xml.key",
+                enabled: 1
+              ).that_comes_before("Package[#{package_name}]")
             end
 
             is_expected.to contain_package("#{package_name}").with_ensure('present')
@@ -308,7 +272,8 @@ describe 'owncloud' do
               when 'Debian'
                 is_expected.not_to contain_apt__source('owncloud')
               when 'RedHat'
-                is_expected.not_to contain_class('epel')
+                is_expected.not_to contain_class('yum::repo::epel')
+                is_expected.not_to contain_class('yum::repo::remi_php70')
                 is_expected.not_to contain_yumrepo('isv:ownCloud:community')
               end
 
