@@ -201,11 +201,11 @@ The `owncloud` class configures all possible options for this module. With defau
 
 ##### `admin_pass`
 
-Optionally set the admin password in the ownCloud configuration. 
+Optionally set the admin password in the ownCloud configuration.
 
 ##### `admin_user`
 
-Optionally set the admin user in the ownCloud configuration (using `admin_pass` as the password). If not set, OwnCloud will ask for admin credentials upon first connection.  
+Optionally set the admin user in the ownCloud configuration (using `admin_pass` as the password). If not set, OwnCloud will ask for admin credentials upon first connection.
 
 ##### `datadirectory`
 
@@ -303,7 +303,7 @@ Defaults to `all -SSLv2 -SSLv3`.
 
 ##### `trusted_domains`
 
-Optional array to set the default trusted domains for OwnCloud. Use domain names without protocol. Default is unset, which will take the first domain used to connect to OwnCloud as a trusted domain name. 
+Optional array to set the default trusted domains for OwnCloud. Use domain names without protocol. Default is unset, which will take the first domain used to connect to OwnCloud as a trusted domain name.
 
 ##### `url`
 
@@ -339,11 +339,6 @@ Configures the virtual host to install if `manage_apache` or `manage_vhost` are 
     * Ubuntu 14.04 Trusty
 
 ## Development
-
-In the pipeline:
-
-* Add support for additional operating systems.
-* Add support for PostgreSQL.
 
 At this time only one instance of ownCloud can be configured per host. It would be easy enough to change to a define to make a multi-tenant ownCloud server, but wasn't a requirement when writing this and can only see this being implemented if someone wants to add this functionality via a pull request.
 
