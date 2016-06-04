@@ -80,27 +80,27 @@ describe 'owncloud' do
 
               is_expected.not_to contain_class('yum::repo::epel')
               is_expected.not_to contain_class('yum::repo::remi_php70')
-              is_expected.not_to contain_yumrepo('isv:ownCloud:community')
 
               is_expected.to contain_file('/etc/apache2/sites-enabled/000-default.conf').with_ensure('absent').that_requires('Class[apache]').that_notifies('Class[apache::service]')
+              is_expected.not_to contain_yumrepo('owncloud')
 
               case facts[:operatingsystem]
               when 'Debian'
                 is_expected.to contain_apt__source('owncloud').with(
-                  location: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/Debian_#{facts[:operatingsystemmajrelease]}.0/",
+                  location: "http://download.owncloud.org/download/repositories/stable/Debian_#{facts[:operatingsystemmajrelease]}.0/",
                   key: {
-                    'id' => 'F9EA4996747310AE79474F44977C43A8BA684223',
-                    'source' => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/Debian_#{facts[:operatingsystemmajrelease]}.0/Release.key"
+                    'id' => 'BCECA90325B072AB1245F739AB7C32C35180350A',
+                    'source' => "https://download.owncloud.org/download/repositories/stable/Debian_#{facts[:operatingsystemmajrelease]}.0/Release.key"
                   },
                   release: ' ',
                   repos: '/'
                 ).that_comes_before("Package[#{package_name}]")
               when 'Ubuntu'
                 is_expected.to contain_apt__source('owncloud').with(
-                  location: "http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_#{facts[:operatingsystemrelease]}/",
+                  location: "http://download.owncloud.org/download/repositories/stable/Ubuntu_#{facts[:operatingsystemrelease]}/",
                   key: {
-                    'id' => 'F9EA4996747310AE79474F44977C43A8BA684223',
-                    'source' => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_#{facts[:operatingsystemrelease]}/Release.key"
+                    'id' => 'BCECA90325B072AB1245F739AB7C32C35180350A',
+                    'source' => "https://download.owncloud.org/download/repositories/stable/Ubuntu_#{facts[:operatingsystemrelease]}/Release.key"
                   },
                   release: ' ',
                   repos: '/'
@@ -112,16 +112,16 @@ describe 'owncloud' do
 
               is_expected.to contain_class('yum::repo::epel')
               is_expected.to contain_class('yum::repo::remi_php70')
-
-              is_expected.to contain_yumrepo('isv:ownCloud:community').with(
-                name: 'isv_ownCloud_community',
-                # descr: "Latest stable community release of ownCloud (CentOS_CentOS-#{facts[:operatingsystemmajrelease]})",
-                descr: "ownCloud Server Version stable (CentOS_#{facts[:operatingsystemmajrelease]})",
-                baseurl: "https://download.owncloud.org/download/repositories/stable/CentOS_#{facts[:operatingsystemmajrelease]}/",
-                gpgcheck: 1,
-                gpgkey: "https://download.owncloud.org/download/repositories/stable/CentOS_#{facts[:operatingsystemmajrelease]}/repodata/repomd.xml.key",
-                enabled: 1
-              ).that_comes_before("Package[#{package_name}]")
+              case facts[:operatingsystem]
+              when 'CentOS'
+                is_expected.to contain_yumrepo('owncloud').with(
+                  descr: "ownCloud Server Version stable (CentOS_#{facts[:operatingsystemmajrelease]})",
+                  baseurl: "http://download.owncloud.org/download/repositories/stable/CentOS_#{facts[:operatingsystemmajrelease]}/",
+                  gpgcheck: 1,
+                  gpgkey: "http://download.owncloud.org/download/repositories/stable/CentOS_#{facts[:operatingsystemmajrelease]}/repodata/repomd.xml.key",
+                  enabled: 1
+                ).that_comes_before("Package[#{package_name}]")
+              end
             end
 
             is_expected.to contain_package("#{package_name}").with_ensure('present')
@@ -274,7 +274,7 @@ describe 'owncloud' do
               when 'RedHat'
                 is_expected.not_to contain_class('yum::repo::epel')
                 is_expected.not_to contain_class('yum::repo::remi_php70')
-                is_expected.not_to contain_yumrepo('isv:ownCloud:community')
+                is_expected.not_to contain_yumrepo('owncloud')
               end
 
               ['core/skeleton/documents', 'core/skeleton/music', 'core/skeleton/photos'].each do |skeleton_dir|

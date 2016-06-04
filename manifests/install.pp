@@ -10,12 +10,12 @@ class owncloud::install {
         include ::apt
 
         apt::source { 'owncloud':
-          location => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/Debian_${::operatingsystemmajrelease}.0/",
+          location => "http://download.owncloud.org/download/repositories/stable/Debian_${::operatingsystemmajrelease}.0/",
           release  => ' ',
           repos    => '/',
           key      => {
-            id     => 'F9EA4996747310AE79474F44977C43A8BA684223',
-            source => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/Debian_${::operatingsystemmajrelease}.0/Release.key",
+            id     => 'BCECA90325B072AB1245F739AB7C32C35180350A',
+            source => "https://download.owncloud.org/download/repositories/stable/Debian_${::operatingsystemmajrelease}.0/Release.key",
           },
           before   => Package[$::owncloud::package_name],
         }
@@ -24,12 +24,12 @@ class owncloud::install {
         include ::apt
 
         apt::source { 'owncloud':
-          location => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_${::operatingsystemrelease}/",
+          location => "http://download.owncloud.org/download/repositories/stable/Ubuntu_${::operatingsystemrelease}/",
           release  => ' ',
           repos    => '/',
           key      => {
-            id     => 'F9EA4996747310AE79474F44977C43A8BA684223',
-            source => "http://download.opensuse.org/repositories/isv:/ownCloud:/community/xUbuntu_${::operatingsystemrelease}/Release.key",
+            id     => 'BCECA90325B072AB1245F739AB7C32C35180350A',
+            source => "https://download.owncloud.org/download/repositories/stable/Ubuntu_${::operatingsystemrelease}/Release.key",
           },
           before   => Package[$::owncloud::package_name],
         }
@@ -38,12 +38,11 @@ class owncloud::install {
         include ::yum::repo::epel
         include ::yum::repo::remi_php70
 
-        yumrepo { 'isv:ownCloud:community':
-          name     => 'isv_ownCloud_community',
+        yumrepo { 'owncloud':
           descr    => "ownCloud Server Version stable (CentOS_${::operatingsystemmajrelease})",
-          baseurl  => "https://download.owncloud.org/download/repositories/stable/CentOS_${::operatingsystemmajrelease}/",
+          baseurl  => "http://download.owncloud.org/download/repositories/stable/CentOS_${::operatingsystemmajrelease}/",
           gpgcheck => 1,
-          gpgkey   => "https://download.owncloud.org/download/repositories/stable/CentOS_${::operatingsystemmajrelease}/repodata/repomd.xml.key",
+          gpgkey   => "http://download.owncloud.org/download/repositories/stable/CentOS_${::operatingsystemmajrelease}/repodata/repomd.xml.key",
           enabled  => 1,
           before   => Package[$::owncloud::package_name],
         }
