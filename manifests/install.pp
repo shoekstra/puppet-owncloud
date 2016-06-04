@@ -35,9 +35,6 @@ class owncloud::install {
         }
       }
       'CentOS': {
-        include ::yum::repo::epel
-        include ::yum::repo::remi_php70
-
         yumrepo { 'owncloud':
           descr    => "ownCloud Server Version stable (CentOS_${::operatingsystemmajrelease})",
           baseurl  => "http://download.owncloud.org/download/repositories/stable/CentOS_${::operatingsystemmajrelease}/",
@@ -49,13 +46,6 @@ class owncloud::install {
       }
       default: {
       }
-    }
-  }
-
-  if $::owncloud::manage_phpmysql {
-    class { '::mysql::bindings':
-      php_enable => true,
-      before     => Package[$::owncloud::package_name],
     }
   }
 
