@@ -63,6 +63,7 @@ describe 'owncloud' do
             is_expected.to compile.with_all_deps
 
             is_expected.to contain_class('owncloud::params')
+            is_expected.to contain_class('owncloud::php').that_comes_before('owncloud::install')
             is_expected.to contain_class('owncloud::install').that_comes_before('owncloud::apache')
             is_expected.to contain_class('owncloud::apache').that_comes_before('owncloud::config')
             is_expected.to contain_class('owncloud::config').that_comes_before('owncloud')
@@ -71,17 +72,32 @@ describe 'owncloud' do
             is_expected.to contain_package("#{package_name}").with_ensure('present')
           end
 
+          # owncloud::php
+
+          it 'should install and configure php and php modules' do
+            is_expected.to contain_class('php')
+
+            if facts[:osfamily] == 'Debian'
+              %w(curl gd ldap mysqlnd).each do |mod|
+                is_expected.to contain_php__module(mod).that_requires('class[php]')
+              end
+            end
+
+            if facts[:osfamily] == 'RedHat'
+              %w(gd ldap mbstring mysql pdo process xml).each do |mod|
+                is_expected.to contain_php__module(mod).that_requires('class[php]')
+              end
+            end
+          end
+
           # owncloud::install
 
-          it 'should include classes to manage repo, install owncloud repo and install owncloud server package' do
+          it 'should create owncloud repo and install owncloud' do
             case facts[:osfamily]
             when 'Debian'
               is_expected.to contain_class('apt')
 
-              is_expected.not_to contain_class('yum::repo::epel')
-              is_expected.not_to contain_class('yum::repo::remi_php70')
-
-              is_expected.to contain_file('/etc/apache2/sites-enabled/000-default.conf').with_ensure('absent').that_requires('Class[apache]').that_notifies('Class[apache::service]')
+              # is_expected.not_to contain_class('yum::repo::epel')
               is_expected.not_to contain_yumrepo('owncloud')
 
               case facts[:operatingsystem]
@@ -110,8 +126,6 @@ describe 'owncloud' do
               is_expected.not_to contain_class('apt')
               is_expected.not_to contain_apt__source('owncloud')
 
-              is_expected.to contain_class('yum::repo::epel')
-              is_expected.to contain_class('yum::repo::remi_php70')
               case facts[:operatingsystem]
               when 'CentOS'
                 is_expected.to contain_yumrepo('owncloud').with(
@@ -136,23 +150,27 @@ describe 'owncloud' do
               purge_configs: false
             )
 
-            # We only test for the php module, ssl and rewrite are auto included by Apache module.
-
             is_expected.to contain_class('apache::mod::php')
+
+            if facts[:osfamily] == 'Debian'
+              %w(/etc/apache2/sites-enabled/000-default /etc/apache2/sites-enabled/000-default.conf).each do |file|
+                is_expected.to contain_file(file).with_ensure('absent').that_requires('Class[apache]').that_notifies('Class[apache::service]')
+              end
+            end
 
             # check apache vhost is generated properly
 
             vhost_params = {
-              'servername'                  => 'owncloud.example.com',
-              'port'                        => '80',
-              'docroot'                     => "#{documentroot}",
-              'docroot_owner'               => 'root',
-              'docroot_group'               => 'root',
-              'directories'                 => {
-                'path'             => "#{documentroot}",
-                'options'          => ['Indexes', 'FollowSymLinks', 'MultiViews'],
-                'allow_override'   => 'All',
-                'custom_fragment'  => 'Dav Off',
+              'servername'    => 'owncloud.example.com',
+              'port'          => '80',
+              'docroot'       => "#{documentroot}",
+              'docroot_owner' => 'root',
+              'docroot_group' => 'root',
+              'directories'   => {
+                'path'           => "#{documentroot}",
+                'options'        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
+                'allow_override' => 'All',
+                'custom_fragment'=> 'Dav Off',
               }
             }
             if apache_version == '2.2'
@@ -259,9 +277,21 @@ describe 'owncloud' do
 
         context 'owncloud class with non default parameters' do
           describe 'when all manage_ parameters set to false' do
-            let(:params) { { manage_apache: false, manage_db: false, manage_repo: false, manage_skeleton: false, manage_vhost: false } }
+            let(:params) { { manage_apache: false, manage_db: false, manage_php: false, manage_repo: false, manage_skeleton: false, manage_vhost: false } }
 
             it 'should not manage any extras, just install and configure owncloud' do
+              is_expected.not_to contain_class('php')
+
+              %w(curl gd ldap mysqlnd).each do |mod|
+                is_expected.not_to contain_php__module(mod).that_requires('class[php]')
+              end
+
+              if facts[:operatingsystem] == 'CentOS'
+                %w(mbstring pecl-zip pdo process xml).each do |mod|
+                  is_expected.not_to contain_php__module(mod)
+                end
+              end
+
               is_expected.not_to contain_class('apache::mod::php')
               is_expected.not_to contain_apache__vhost('owncloud-http')
 
@@ -350,6 +380,16 @@ describe 'owncloud' do
               )
 
               is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/^  "directory"(\ *)=> "\/test",$/)
+            end
+          end
+
+          describe 'when php_modules are defined' do
+            let(:params) { { php_modules: ['mod1','mod2']} }
+
+            it 'should install extra php modules' do
+              %w(mod1 mod2).each do |mod|
+                is_expected.to contain_php__module(mod).that_requires('class[php]')
+              end
             end
           end
 

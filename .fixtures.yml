@@ -4,6 +4,7 @@ fixtures:
     apt: "https://github.com/puppetlabs/puppetlabs-apt.git"
     concat: "https://github.com/puppetlabs/puppetlabs-concat.git"
     mysql: "https://github.com/puppetlabs/puppetlabs-mysql.git"
+    php: "https://github.com/example42/puppet-php.git"
     puppi: "https://github.com/example42/puppi.git"
     stdlib: "https://github.com/puppetlabs/puppetlabs-stdlib.git"
     yum: "https://github.com/example42/puppet-yum.git"

@@ -15,10 +15,11 @@ class owncloud (
   $https_port      = 443,
   $manage_apache   = true,
   $manage_db       = true,
-  $manage_phpmysql = true,
+  $manage_php      = true,
   $manage_repo     = true,
   $manage_skeleton = true,
   $manage_vhost    = true,
+  $php_modules     = undef,
   $ssl             = false,
   $ssl_ca          = undef,
   $ssl_cert        = undef,
@@ -47,6 +48,7 @@ class owncloud (
     if $ssl_chain { validate_absolute_path($ssl_chain) }
   }
 
+  class { '::owncloud::php': } ->
   class { '::owncloud::install': } ->
   class { '::owncloud::apache': } ->
   class { '::owncloud::config': } ->

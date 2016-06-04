@@ -30,6 +30,7 @@ RSpec.configure do |c|
       if fact('osfamily') == 'RedHat'
         on host, puppet('module', 'install', 'example42-yum'), { :acceptable_exit_codes => [0,1] }
       end
+      on host, puppet('module', 'install', 'example42-php'), { :acceptable_exit_codes => [0,1] }
       on host, puppet('module', 'install', 'puppetlabs-apache'), { :acceptable_exit_codes => [0,1] }
       on host, puppet('module', 'install', 'puppetlabs-mysql'), { :acceptable_exit_codes => [0,1] }
       on host, puppet('module', 'install', 'puppetlabs-stdlib'), { :acceptable_exit_codes => [0,1] }

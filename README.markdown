@@ -35,6 +35,7 @@ This module provides a simple way to install ownCloud, and optionally include Ap
 * package/service/configuration files for Apache
 * Apache module and virtual hosts
 * MySQL database and user creation (does not install a MySQL server)
+* PHP server-side components and required modules
 
     * **WARNING**: If module is set to manage Apache (enabled by default), any existing Apache configuration not Puppet managed may be purged.
 
@@ -250,9 +251,9 @@ Set to true for the module to install Apache using the [PuppetLabs Apache module
 
 Set to true for the module to create the database and database user for you, using the `db_name`, `db_user`, `db_pass` and `db_type` values. Enabling this will not install the database server, this must be done separately. Defaults to 'true'.
 
-##### `manage_phpmysql`
+##### `manage_php`
 
-Set to true for the module to install the PHP MySQL bindings using the [PuppetLabs MySQL module](https://github.com/puppetlabs/puppetlabs-mysql); this is required on some distributions until the package is installed by the ownCloud package. Defaults to 'true'.
+Set to true for the module to install and configure PHP server-side components and modules required for ownCloud. Defaults to 'true'.
 
 ##### `manage_repo`
 
@@ -265,6 +266,10 @@ Set to true for the module to manage the skeleton directory. This is could be a 
 ##### `manage_vhost`
 
 Set to true for the module to install the Apache virtual host using the [PuppetLabs Apache module](https://github.com/puppetlabs/puppetlabs-apache). It is possible to have `manage_apache` set to false and `manage_vhost` set to true to only install the vhost if you manage Apache separately. Defaults to 'true'.
+
+##### `php_modules`
+
+Specify the PHP module package names to install additional PHP modules; adding new ownCloud plug-ins may require additional PHP modules to be installed.
 
 ##### `ssl`
 
@@ -315,6 +320,7 @@ Configures the virtual host to install if `manage_apache` or `manage_vhost` are 
 
 #### Private Classes
 
+* `owncloud::php`: Installs and configures PHP when `manage_php` is set to `true`.
 * `owncloud::apache`: Installs and configures Apache when `manage_apache` is set to `true`.
 * `owncloud::config`: Configures ownCloud using autoconfig.php (and creates/exports a database).
 * `owncloud::install`: Installs ownCloud (using the ownCloud repository).
