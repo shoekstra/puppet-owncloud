@@ -18,7 +18,7 @@ describe 'owncloud' do
           apache_group = 'www-data'
           datadirectory = '/var/www/owncloud/data'
           documentroot = '/var/www/owncloud'
-          package_name = 'owncloud-server'
+          package_name = 'owncloud-files'
 
           case facts[:operatingsystem]
           when 'Debian'
@@ -35,7 +35,7 @@ describe 'owncloud' do
           apache_group = 'apache'
           datadirectory = '/var/www/html/owncloud/data'
           documentroot = '/var/www/html/owncloud'
-          package_name = 'owncloud'
+          package_name = 'owncloud-files'
 
           if (Versionomy.parse(facts[:operatingsystemrelease]) > Versionomy.parse('7')) || (Versionomy.parse(facts[:operatingsystemrelease]) == Versionomy.parse('7'))
             apache_version = '2.4'
@@ -315,7 +315,7 @@ describe 'owncloud' do
               is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/^  "dbtableprefix"(\ *)=> "test",$/)
             end
           end
-          
+
           describe 'when admin login credentials are set' do
            let(:params) { { admin_user: 'test', admin_pass: 'test'} }
 
@@ -402,7 +402,7 @@ describe 'owncloud' do
 
   context 'unsupported operating system' do
     describe 'owncloud class without any parameters on Solaris/Nexenta' do
-      package_name = 'owncloud-server'
+      package_name = 'owncloud-files'
       let(:facts) do
         {
           osfamily: 'Solaris',
