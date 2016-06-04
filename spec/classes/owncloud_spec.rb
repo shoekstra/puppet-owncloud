@@ -97,7 +97,6 @@ describe 'owncloud' do
             when 'Debian'
               is_expected.to contain_class('apt')
 
-              # is_expected.not_to contain_class('yum::repo::epel')
               is_expected.not_to contain_yumrepo('owncloud')
 
               case facts[:operatingsystem]
@@ -354,14 +353,6 @@ describe 'owncloud' do
               is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/^  "adminpass"(\ *)=> "test",$/)
             end
           end
-          
-          describe 'when trusted_domains are set' do
-           let(:params) { { trusted_domains: ['test']} }
-
-            it 'should populate autoconfig.php.erb correctly' do
-              is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/^  "trusted_domains"(\ *)=> \["test"\],$/)
-            end
-          end
 
           describe 'when datadirectory is set to "/test"' do
             let(:params) { { datadirectory: '/test' } }
@@ -405,6 +396,14 @@ describe 'owncloud' do
             it 'should have https vhost and http redirect vhost' do
               is_expected.to contain_apache__vhost('owncloud-http').with(port: 80)
               is_expected.to contain_apache__vhost('owncloud-https').with(port: 443)
+            end
+          end
+
+          describe 'when trusted_domains are set' do
+           let(:params) { { trusted_domains: ['test']} }
+
+            it 'should populate autoconfig.php.erb correctly' do
+              is_expected.to contain_file("#{documentroot}/config/autoconfig.php").with_content(/^  "trusted_domains"(\ *)=> \["test"\],$/)
             end
           end
 

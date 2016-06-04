@@ -11,10 +11,10 @@ class owncloud::apache {
       purge_configs => false,
     }
 
-    include '::apache::mod::php', '::apache::mod::rewrite', '::apache::mod::ssl'
+    include '::apache::mod::php'
 
     if $::osfamily == 'Debian' {
-      file { '/etc/apache2/sites-enabled/000-default.conf':
+      file { ['/etc/apache2/sites-enabled/000-default', '/etc/apache2/sites-enabled/000-default.conf']:
         ensure  => absent,
         require => Class['::apache'],
         notify  => Class['::apache::service'],
