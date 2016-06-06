@@ -336,7 +336,10 @@ Configures the virtual host to install if `manage_apache` or `manage_vhost` are 
     * CentOS 7
     * Debian 7
     * Debian 8
-    * Ubuntu 14.04 Trusty
+    * Ubuntu 14.04
+    * Ubuntu 15.10
+    * Ubuntu 15.10
+    * Ubuntu 16.04
 
 ## Development
 
