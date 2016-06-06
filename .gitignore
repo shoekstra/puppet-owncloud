@@ -3,6 +3,7 @@
 .vagrant
 .bundle
 .idea
+coverage
 Gemfile.lock
 log
 pkg
